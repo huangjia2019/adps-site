@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模式矩阵 · ADPS</title>
+    <meta name="description" content="28 模式矩阵：认知功能 × 执行拓扑。ADPS 的架构语言。">
+    <link rel="canonical" href="https://adpsagent.com/zh/patterns/">
+    <link rel="alternate" hreflang="en" href="https://adpsagent.com/patterns/">
+    <link rel="alternate" hreflang="zh" href="https://adpsagent.com/zh/patterns/">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body class="page-essay">
+
+    <header class="site-header">
+        <div class="container">
+            <a href="/zh/" class="site-brand">ADPS</a>
+            <nav class="site-nav">
+                <a href="/zh/patterns/" style="color: var(--color-link);">模式矩阵</a>
+                <a href="/zh/research/">论文</a>
+                <a href="/zh/founders/">创始成员</a>
+                <a href="/zh/join/">加入我们</a>
+                <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener">GitHub</a>
+                <a href="/patterns/" class="lang-switch">EN</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container content">
+
+        <article class="essay">
+            <h1 style="font-size: 2.1rem; margin-bottom: 0.5rem;">28 模式矩阵</h1>
+            <p style="color: var(--color-text-muted); margin-bottom: 2rem;">7 × 6 的 Agent 架构框架。</p>
+
+            <p>
+                <strong>模型在花钱，Harness 在控预算。</strong>这套目录就是你明天可以直接用进项目里的词汇表。
+            </p>
+
+            <p>
+                大部分"Agent 架构"指南给的都是一张平铺的清单——Reflection、ReAct、Multi-Agent、Tree of Thoughts、
+                Reflexive Metacognitive，等等。平铺清单回答的是<em>有哪些模式</em>。它不回答<em>我的问题坐落在哪里、
+                那个坐标上住着哪个模式</em>。
+            </p>
+
+            <p>
+                一个贷款评估 Agent 崩掉，不是因为缺了 Reflection，而是因为 Perception 阶段的预算分配把那份
+                disqualifying 文档丢了。一个多 Agent 代码评审系统漂移，不是因为 ReAct 错了，而是因为
+                Collaboration 拓扑没有冲突解决机制，导致互相矛盾的编辑不断累积。<strong>知道失败发生在哪条轴上，
+                比知道失败模式叫什么更重要。</strong>
+            </p>
+
+            <h2>两条轴</h2>
+            <p>
+                <strong>认知功能</strong>（行）——Agent 在做什么类型的工作。7 类：
+                感知、记忆、推理、行动、反思、协作、治理。
+            </p>
+            <p>
+                <strong>执行拓扑</strong>（列）——工作长什么形状。6 类：
+                链式、路由、并行、编排、循环、层级。
+            </p>
+            <p>
+                两轴相交，形成 7×6 = 42 格的矩阵。其中 28 格落有命名模式——一部分借自已有文献
+                （RAG、思维链、规划执行），一部分是为之前无名的格子在本框架里第一次命名（上下文分诊、
+                失败日记、可观测性等）。剩下的 14 格是<em>有意空白</em>的，代表工业空白和未来研究的前沿。
+            </p>
+
+            <h2>矩阵</h2>
+            <p>
+                完整矩阵、可运行代码、每个模式对应的工程切片，都在配套 GitHub 仓库里：
+            </p>
+            <ul style="margin: 0.5rem 0 1rem 1.5rem; list-style: disc;">
+                <li><a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener"><strong>huangjia2019/agent-design-patterns</strong></a>
+                    ——独立目录，每个模式自包含、可独立运行。<em>（未来将迁至 ADPS 组织名下。）</em></li>
+                <li><a href="https://github.com/huangjia2019/designing-ai-agents" target="_blank" rel="noopener"><strong>huangjia2019/designing-ai-agents</strong></a>
+                    ——Manning 书配套；Argus runtime 按章节生长。</li>
+            </ul>
+
+            <h2>方法论</h2>
+            <p>
+                矩阵通过 <strong>Pattern Selection Card</strong>（模式选项卡）落地为可操作的决策工具——三个面板：
+            </p>
+            <ul style="margin: 0.5rem 0 1rem 1.5rem; list-style: disc;">
+                <li><strong>ASSESS</strong>——任务需要哪些认知功能？</li>
+                <li><strong>ROUTE</strong>——约束条件适配哪种拓扑？</li>
+                <li><strong>SELECT</strong>——交叉点上住着哪些命名模式？</li>
+            </ul>
+            <p>
+                这张卡把"我要做一个 X 的 Agent"在十五分钟内变成候选模式清单。
+            </p>
+
+            <h2>延伸阅读</h2>
+            <ul style="margin: 0.5rem 0 1rem 1.5rem; list-style: disc;">
+                <li>立场论文：<a href="https://arxiv.org/abs/2605.13850" target="_blank" rel="noopener">arXiv:2605.13850</a></li>
+                <li>Manning 书：<a href="https://www.manning.com/books/designing-ai-agents" target="_blank" rel="noopener"><em>Designing AI Agents</em></a></li>
+                <li>可运行目录：<a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener">agent-design-patterns</a></li>
+            </ul>
+
+        </article>
+
+        <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-rule); color: var(--color-text-faint); font-size: 0.88rem; max-width: 52rem;">
+            <p>ADPS · Agent Design Patterns Society · 2026 年发起</p>
+        </footer>
+
+    </main>
+
+</body>
+</html>

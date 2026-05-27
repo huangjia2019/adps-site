@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADPS · Agent 设计模式研究小组</title>
+    <meta name="description" content="ADPS 是一个把中国工程师的一线 Agent 实践、软件工程方法、开源 Harness 经验和企业级落地反馈，沉淀为全球可讨论的 Agent 架构语言的小型研究共同体。">
+    <meta name="keywords" content="ADPS, Agent 设计模式, AI agent, 生产级 agent, 架构, 双轴框架, 设计语言">
+
+    <meta property="og:title" content="ADPS · Agent 设计模式研究小组">
+    <meta property="og:description" content="生产级 AI agent 系统的架构语言。2026 年发起。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://adpsagent.com/zh/">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:locale:alternate" content="en_US">
+
+    <link rel="canonical" href="https://adpsagent.com/zh/">
+    <link rel="alternate" hreflang="en" href="https://adpsagent.com/">
+    <link rel="alternate" hreflang="zh" href="https://adpsagent.com/zh/">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="page-home">
+
+    <header class="site-header">
+        <div class="container">
+            <a href="/zh/" class="site-brand">ADPS</a>
+            <nav class="site-nav">
+                <a href="/zh/patterns/">模式矩阵</a>
+                <a href="/zh/research/">论文</a>
+                <a href="/zh/founders/">创始成员</a>
+                <a href="/zh/join/">加入我们</a>
+                <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener">GitHub</a>
+                <a href="/" class="lang-switch">EN</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container content">
+
+        <section class="intro">
+            <div class="intro-text" style="grid-column: 1 / -1;">
+                <h1 style="font-size: 2.1rem; margin-bottom: 0.5rem;">Agent Design Patterns Society</h1>
+                <p class="intro-role" style="font-size: 1.05rem; margin-bottom: 1.25rem;">沉淀通用范式，做可成长的 Agent 系统。</p>
+                <p class="lede">
+                    ADPS 是一个小而认真的研究共同体。我们把中国工程师的一线 agent 实践、软件工程方法、开源 Harness 经验和
+                    企业级落地反馈，沉淀为<strong>全球工程师都可以使用、可以讨论、可以评审、可以传承的架构语言</strong>。
+                </p>
+                <p class="lede">
+                    我们不急着给自己封号。我们只做一件事：把 agent 时代反复出现的架构问题，整理成
+                    工程师能复用、能争论、能评审、能传承的模式语言。
+                </p>
+            </div>
+        </section>
+
+        <section class="block">
+            <h2>我们做什么</h2>
+            <p>
+                ADPS 把反复出现的 agent 架构问题整理成一套连贯的模式语言。工作围绕三件交付物展开：
+            </p>
+            <ul style="margin: 0.8rem 0 1rem 1.5rem; list-style: disc;">
+                <li style="margin-bottom: 0.5rem;"><strong>模式目录</strong>——28 个命名模式落在 7×6 矩阵
+                （认知功能 × 执行拓扑）上，每一个都有可运行的实现，以及来自真实生产代码的工程切片。</li>
+                <li style="margin-bottom: 0.5rem;"><strong>模式选型方法论</strong>——6 步流程加 5 条定律，
+                把"我要做一个 X 的 agent"在十五分钟内变成候选模式清单。</li>
+                <li style="margin-bottom: 0.5rem;"><strong>生产级 Harness</strong>——开源参考实现，
+                展示模式在成本、时延、治理约束下如何组合。</li>
+            </ul>
+        </section>
+
+        <section class="block">
+            <h2>框架</h2>
+            <p>
+                双轴框架——<strong>认知功能 × 执行拓扑</strong>——首次发表在论文
+                <em>A Two-Dimensional Framework for AI Agent Design Patterns</em>（Huang &amp; Zhou，
+                <a href="https://arxiv.org/abs/2605.13850" target="_blank" rel="noopener">arXiv:2605.13850</a>），
+                并在 Manning 的英文书
+                <a href="https://www.manning.com/books/designing-ai-agents" target="_blank" rel="noopener"><em>Designing AI Agents</em></a>
+                中进一步展开。ADPS 现在作为共同体资产持续维护这套目录。
+            </p>
+            <p>
+                <a href="/zh/patterns/" class="cta">查看 28 模式矩阵 →</a>
+            </p>
+        </section>
+
+        <section class="block">
+            <h2>创始成员</h2>
+            <p>
+                四位创始成员代表四种力量：架构语言、软件工程、开源生态、企业落地。
+            </p>
+            <ul style="margin: 0.8rem 0 1rem 0; list-style: none;">
+                <li style="padding: 0.65rem 0; border-bottom: 1px dotted var(--color-rule);">
+                    <strong>黄佳</strong> <span style="color: var(--color-text-muted);">— 框架 · 写作 · 全球叙事接口</span><br>
+                    <span style="font-size: 0.92rem; color: var(--color-text-muted);">新加坡 A*STAR AI 研究员。Manning《Designing AI Agents》作者。</span>
+                </li>
+                <li style="padding: 0.65rem 0; border-bottom: 1px dotted var(--color-rule);">
+                    <strong>茹炳晟</strong> <span style="color: var(--color-text-muted);">— 软件工程 · 研发效能</span><br>
+                    <span style="font-size: 0.92rem; color: var(--color-text-muted);">腾讯 Tech Lead，CCF TF 研发效能 SIG 主席。</span>
+                </li>
+                <li style="padding: 0.65rem 0; border-bottom: 1px dotted var(--color-rule);">
+                    <strong>姜宁 (Willem Jiang)</strong> <span style="color: var(--color-text-muted);">— 开源 · Harness · 工作流</span><br>
+                    <span style="font-size: 0.92rem; color: var(--color-text-muted);">Apache 软件基金会长期贡献者。DeerFlow 开发者。</span>
+                </li>
+                <li style="padding: 0.65rem 0;">
+                    <strong>梁博</strong> <span style="color: var(--color-text-muted);">— 企业 SaaS · 金融场景 · 生产反馈</span><br>
+                    <span style="font-size: 0.92rem; color: var(--color-text-muted);">上海东方屹腾科技副总裁。银行泛金融 SaaS 转型 Agents 体系。</span>
+                </li>
+            </ul>
+            <p style="margin-top: 0.8rem;">
+                <a href="/zh/founders/" class="cta">阅读完整创始成员介绍 →</a>
+            </p>
+        </section>
+
+        <section class="block">
+            <h2>资产</h2>
+            <ul style="margin: 0 0 0 0; list-style: none;">
+                <li style="padding: 0.55rem 0; border-bottom: 1px dotted var(--color-rule);">
+                    <strong><a href="https://arxiv.org/abs/2605.13850" target="_blank" rel="noopener">arXiv:2605.13850</a></strong>
+                    ——提出双轴框架的立场论文。
+                </li>
+                <li style="padding: 0.55rem 0; border-bottom: 1px dotted var(--color-rule);">
+                    <strong><a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener">github.com/huangjia2019/agent-design-patterns</a></strong>
+                    ——28 个模式的可运行目录。未来将迁至 ADPS 组织名下。
+                </li>
+                <li style="padding: 0.55rem 0; border-bottom: 1px dotted var(--color-rule);">
+                    <strong><a href="https://github.com/huangjia2019/designing-ai-agents" target="_blank" rel="noopener">github.com/huangjia2019/designing-ai-agents</a></strong>
+                    ——《Designing AI Agents》Manning 书配套代码。
+                </li>
+                <li style="padding: 0.55rem 0;">
+                    <strong><a href="https://www.manning.com/books/designing-ai-agents" target="_blank" rel="noopener">Manning &middot; <em>Designing AI Agents</em></a></strong>
+                    ——生产级 AI agent 的设计模式目录。
+                </li>
+            </ul>
+        </section>
+
+        <section class="block">
+            <h2>加入我们</h2>
+            <p>
+                ADPS 面向有真实经验的工程师和组织开放——尤其是有大规模部署、强监管行业、
+                或者有较硬可靠性约束下的 agent 系统建设经验的同行。
+            </p>
+            <p>
+                <a href="/zh/join/" class="cta">了解参与方式 →</a>
+            </p>
+        </section>
+
+        <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-rule); color: var(--color-text-faint); font-size: 0.88rem;">
+            <p>ADPS · Agent Design Patterns Society · 2026 年发起</p>
+            <p style="margin-top: 0.3rem;">
+                <a href="/" style="color: var(--color-text-muted);">EN</a> ·
+                <a href="/zh/" style="color: var(--color-text-muted);">中文</a> ·
+                <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener" style="color: var(--color-text-muted);">GitHub</a>
+            </p>
+        </footer>
+
+    </main>
+
+</body>
+</html>
