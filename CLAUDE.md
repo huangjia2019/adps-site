@@ -33,13 +33,8 @@ Operating notes for Claude when working on this repository.
 
 ## Pending setup (user action required)
 
-- **Formspree form ID**: the "Reach out" form on `/` and `/zh/` has `action="https://formspree.io/f/YOUR_FORM_ID"` as a placeholder. Steps:
-  1. Sign up at [formspree.io](https://formspree.io) (free tier = 50 submissions/month)
-  2. Create a new form, name it "ADPS Reach Out"
-  3. Copy the form's endpoint URL (looks like `https://formspree.io/f/abcd1234`)
-  4. Replace `YOUR_FORM_ID` everywhere: `grep -rl YOUR_FORM_ID . | xargs sed -i 's|formspree.io/f/YOUR_FORM_ID|formspree.io/f/abcd1234|g'`
-  5. Submissions land in the inbox of whatever email you signed up with — store there or export to spreadsheet
-- **GoatCounter**: same pattern. Sign up at [goatcounter.com](https://www.goatcounter.com), claim `adps` subdomain. Script in HTML already points to `adps.goatcounter.com/count`.
+- ~~**Formspree form ID**~~ ✅ DONE 2026-05-28. Form ID `xjgzjjeg` live on `/#reach-out` and `/zh/#reach-out`. Submissions land in the registered email + Formspree dashboard.
+- **GoatCounter**: still pending. Sign up at [goatcounter.com](https://www.goatcounter.com), claim `adps` subdomain. Script in HTML already points to `adps.goatcounter.com/count`.
 
 ## Future work
 
