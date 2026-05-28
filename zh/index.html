@@ -14,9 +14,16 @@
     <meta property="og:locale" content="zh_CN">
     <meta property="og:locale:alternate" content="en_US">
 
+    <meta property="og:image" content="https://adpsagent.com/images/og-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://adpsagent.com/images/og-card.png">
+
     <link rel="canonical" href="https://adpsagent.com/zh/">
     <link rel="alternate" hreflang="en" href="https://adpsagent.com/">
     <link rel="alternate" hreflang="zh" href="https://adpsagent.com/zh/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+    <link rel="apple-touch-icon" href="/images/favicon.png">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body class="page-home">
@@ -28,6 +35,7 @@
                 <a href="/zh/patterns/">模式矩阵</a>
                 <a href="/zh/research/">论文</a>
                 <a href="/zh/founders/">创始成员</a>
+                <a href="/zh/news/">新闻</a>
                 <a href="/zh/join/">加入我们</a>
                 <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener">GitHub</a>
                 <a href="/" class="lang-switch">EN</a>
@@ -50,6 +58,17 @@
                     工程师能复用、能争论、能评审、能传承的模式语言。
                 </p>
             </div>
+        </section>
+
+        <section class="block" style="text-align: center; margin: 2rem 0 3rem;">
+            <a href="/zh/patterns/" style="display: inline-block; text-decoration: none;">
+                <img src="/images/matrix-28-clean.png"
+                     alt="28 模式矩阵——7 个认知功能 × 6 种执行拓扑"
+                     style="max-width: 100%; width: 720px; height: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(15, 58, 95, 0.15);">
+            </a>
+            <p style="margin-top: 1rem; font-size: 0.92rem; color: var(--color-text-muted); font-style: italic;">
+                28 模式矩阵 &middot; 7 个认知功能 &times; 6 种执行拓扑
+            </p>
         </section>
 
         <section class="block">
@@ -88,21 +107,33 @@
                 四位创始成员代表四种力量：架构语言、软件工程、开源生态、企业落地。
             </p>
             <ul style="margin: 0.8rem 0 1rem 0; list-style: none;">
-                <li style="padding: 0.65rem 0; border-bottom: 1px dotted var(--color-rule);">
-                    <strong>黄佳</strong> <span style="color: var(--color-text-muted);">— 框架 · 写作 · 全球叙事接口</span><br>
-                    <span style="font-size: 0.92rem; color: var(--color-text-muted);">新加坡 A*STAR AI 研究员。Manning《Designing AI Agents》作者。</span>
+                <li style="padding: 0.85rem 0; border-bottom: 1px dotted var(--color-rule); display: grid; grid-template-columns: 60px 1fr; gap: 1rem; align-items: center;">
+                    <img src="/images/avatar-jia.svg" alt="黄佳" style="width: 60px; height: 60px; border-radius: 50%;">
+                    <div>
+                        <strong>黄佳</strong> <span style="color: var(--color-text-muted);">— 框架 · 写作 · 全球叙事接口</span><br>
+                        <span style="font-size: 0.92rem; color: var(--color-text-muted);">新加坡 A*STAR AI 研究员。Manning《Designing AI Agents》作者。</span>
+                    </div>
                 </li>
-                <li style="padding: 0.65rem 0; border-bottom: 1px dotted var(--color-rule);">
-                    <strong>茹炳晟</strong> <span style="color: var(--color-text-muted);">— 软件工程 · 研发效能</span><br>
-                    <span style="font-size: 0.92rem; color: var(--color-text-muted);">腾讯 Tech Lead，CCF TF 研发效能 SIG 主席。</span>
+                <li style="padding: 0.85rem 0; border-bottom: 1px dotted var(--color-rule); display: grid; grid-template-columns: 60px 1fr; gap: 1rem; align-items: center;">
+                    <img src="/images/avatar-ru.svg" alt="茹炳晟" style="width: 60px; height: 60px; border-radius: 50%;">
+                    <div>
+                        <strong>茹炳晟</strong> <span style="color: var(--color-text-muted);">— 软件工程 · 研发效能</span><br>
+                        <span style="font-size: 0.92rem; color: var(--color-text-muted);">腾讯 Tech Lead，CCF TF 研发效能 SIG 主席。</span>
+                    </div>
                 </li>
-                <li style="padding: 0.65rem 0; border-bottom: 1px dotted var(--color-rule);">
-                    <strong>姜宁 (Willem Jiang)</strong> <span style="color: var(--color-text-muted);">— 开源 · Harness · 工作流</span><br>
-                    <span style="font-size: 0.92rem; color: var(--color-text-muted);">Apache 软件基金会长期贡献者。DeerFlow 开发者。</span>
+                <li style="padding: 0.85rem 0; border-bottom: 1px dotted var(--color-rule); display: grid; grid-template-columns: 60px 1fr; gap: 1rem; align-items: center;">
+                    <img src="/images/avatar-jiang.svg" alt="姜宁" style="width: 60px; height: 60px; border-radius: 50%;">
+                    <div>
+                        <strong>姜宁 (Willem Jiang)</strong> <span style="color: var(--color-text-muted);">— 开源 · Harness · 工作流</span><br>
+                        <span style="font-size: 0.92rem; color: var(--color-text-muted);">Apache 软件基金会长期贡献者。DeerFlow 开发者。</span>
+                    </div>
                 </li>
-                <li style="padding: 0.65rem 0;">
-                    <strong>梁博</strong> <span style="color: var(--color-text-muted);">— 企业 SaaS · 金融场景 · 生产反馈</span><br>
-                    <span style="font-size: 0.92rem; color: var(--color-text-muted);">上海东方屹腾科技副总裁。银行泛金融 SaaS 转型 Agents 体系。</span>
+                <li style="padding: 0.85rem 0; display: grid; grid-template-columns: 60px 1fr; gap: 1rem; align-items: center;">
+                    <img src="/images/avatar-liang.svg" alt="梁博" style="width: 60px; height: 60px; border-radius: 50%;">
+                    <div>
+                        <strong>梁博</strong> <span style="color: var(--color-text-muted);">— 企业 SaaS · 金融场景 · 生产反馈</span><br>
+                        <span style="font-size: 0.92rem; color: var(--color-text-muted);">上海东方屹腾科技副总裁。银行泛金融 SaaS 转型 Agents 体系。</span>
+                    </div>
                 </li>
             </ul>
             <p style="margin-top: 0.8rem;">
@@ -148,11 +179,14 @@
             <p style="margin-top: 0.3rem;">
                 <a href="/" style="color: var(--color-text-muted);">EN</a> ·
                 <a href="/zh/" style="color: var(--color-text-muted);">中文</a> ·
-                <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener" style="color: var(--color-text-muted);">GitHub</a>
+                <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener" style="color: var(--color-text-muted);">GitHub</a> ·
+                <a href="mailto:contact@adpsagent.com" style="color: var(--color-text-muted);">contact@adpsagent.com</a>
             </p>
         </footer>
 
     </main>
 
+    <script data-goatcounter="https://adps.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
