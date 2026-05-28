@@ -50,12 +50,12 @@
                 <h1 style="font-size: 2.1rem; margin-bottom: 0.5rem;">Agent Design Patterns Society</h1>
                 <p class="intro-role" style="font-size: 1.05rem; margin-bottom: 1.25rem;">沉淀通用范式，做可成长的 Agent 系统。</p>
                 <p class="lede">
-                    ADPS 是一个小而认真的研究共同体。我们把中国工程师的一线 agent 实践、软件工程方法、开源 Harness 经验和
-                    企业级落地反馈，沉淀为<strong>全球工程师都可以使用、可以讨论、可以评审、可以传承的架构语言</strong>。
+                    ADPS 是一个小而认真的研究共同体。我们把中国工程师的一线 agent 实践、软件工程方法、开源 Harness 经验
+                    和企业级落地反馈，把 agent 时代反复出现的架构问题，沉淀为<strong>全球工程师都可以使用、
+                    可以讨论、可以评审、可以传承的架构语言</strong>。
                 </p>
                 <p class="lede">
-                    我们不急着给自己封号。我们只做一件事：把 agent 时代反复出现的架构问题，整理成
-                    工程师能复用、能争论、能评审、能传承的模式语言。
+                    我们不急着给自己封号。这件事很朴素：把混乱经验整理成模式语言，让工程师能复用、能争论、能评审、能传承。
                 </p>
             </div>
         </section>
@@ -163,14 +163,47 @@
             </ul>
         </section>
 
-        <section class="block">
-            <h2>加入我们</h2>
+        <section class="block" id="reach-out">
+            <h2>联系我们</h2>
             <p>
                 ADPS 面向有真实经验的工程师和组织开放——尤其是有大规模部署、强监管行业、
-                或者有较硬可靠性约束下的 agent 系统建设经验的同行。
+                或者较硬可靠性约束下的 agent 系统建设经验的同行。<strong>成员资格通过贡献获得，不需要申请。</strong>
             </p>
             <p>
-                <a href="/zh/join/" class="cta">了解参与方式 →</a>
+                填一下下面三项，我们会通过微信联系你。<strong>用昵称就行，不需要真实姓名。</strong>
+            </p>
+
+            <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST"
+                  style="margin-top: 1.25rem; padding: 1.25rem; background: var(--color-quote-bg); border: 1px solid var(--color-rule); border-radius: 6px;">
+
+                <div style="margin-bottom: 0.9rem;">
+                    <label style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem;" for="nickname">昵称</label>
+                    <input type="text" id="nickname" name="nickname" required placeholder="例如：网易老张"
+                           style="width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--color-rule); border-radius: 4px; font-size: 0.95rem; font-family: inherit; background: white;">
+                </div>
+
+                <div style="margin-bottom: 0.9rem;">
+                    <label style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem;" for="contact">微信号 / 任意联系方式</label>
+                    <input type="text" id="contact" name="contact" required placeholder="微信号 / Twitter / LinkedIn / 任意可联系到你的方式"
+                           style="width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--color-rule); border-radius: 4px; font-size: 0.95rem; font-family: inherit; background: white;">
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem;" for="direction">技术方向</label>
+                    <input type="text" id="direction" name="direction" required placeholder="agent runtime / RAG / 多 agent 编排 / 金融 SaaS / DevOps / ..."
+                           style="width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--color-rule); border-radius: 4px; font-size: 0.95rem; font-family: inherit; background: white;">
+                </div>
+
+                <button type="submit"
+                        style="background: var(--color-link); color: white; border: none; padding: 0.6rem 1.3rem; border-radius: 4px; font-size: 0.95rem; font-weight: 600; cursor: pointer; font-family: inherit;">
+                    发送
+                </button>
+            </form>
+
+            <p style="margin-top: 1rem; font-size: 0.88rem; color: var(--color-text-muted);">
+                习惯 GitHub？可以在
+                <a href="https://github.com/huangjia2019/agent-design-patterns/discussions" target="_blank" rel="noopener">agent-design-patterns</a>
+                的 Discussions 里直接发帖。
             </p>
         </section>
 
@@ -180,7 +213,7 @@
                 <a href="/" style="color: var(--color-text-muted);">EN</a> ·
                 <a href="/zh/" style="color: var(--color-text-muted);">中文</a> ·
                 <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener" style="color: var(--color-text-muted);">GitHub</a> ·
-                <a href="mailto:contact@adpsagent.com" style="color: var(--color-text-muted);">contact@adpsagent.com</a>
+                <a href="/zh/#reach-out" style="color: var(--color-text-muted);">联系我们</a>
             </p>
         </footer>
 

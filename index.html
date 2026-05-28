@@ -52,12 +52,13 @@
                 <p class="lede">
                     ADPS is a small but serious research community sedimenting the field experience of
                     Chinese engineers — agent practice, software engineering methodology, open-source
-                    harness work, enterprise deployment feedback — into an
+                    harness work, enterprise deployment feedback — along with the architectural problems
+                    that keep recurring in the agent era, into an
                     <strong>architecture language the world's engineers can use, debate, review, and pass on.</strong>
                 </p>
                 <p class="lede">
-                    We are not in a rush to name ourselves. We do one thing: take the architectural problems
-                    that keep recurring in the agent era and turn them into patterns that engineers can reuse.
+                    We are not in a rush to name ourselves. The work is plain: turn messy experience into a
+                    pattern language engineers can reuse, argue with, review, and hand down.
                 </p>
             </div>
         </section>
@@ -167,14 +168,48 @@
             </ul>
         </section>
 
-        <section class="block">
-            <h2>Join</h2>
+        <section class="block" id="reach-out">
+            <h2>Reach out</h2>
             <p>
                 ADPS is open to engineers and organizations with field experience building production-grade
-                agent systems — particularly at scale, in regulated industries, or under hard reliability constraints.
+                agent systems — at scale, in regulated industries, or under hard reliability constraints.
+                Membership is by contribution, not application.
             </p>
             <p>
-                <a href="/join/" class="cta">How to participate →</a>
+                Fill the three fields below and we'll get in touch through WeChat.
+                Nickname is fine — no real name required.
+            </p>
+
+            <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST"
+                  style="margin-top: 1.25rem; padding: 1.25rem; background: var(--color-quote-bg); border: 1px solid var(--color-rule); border-radius: 6px;">
+
+                <div style="margin-bottom: 0.9rem;">
+                    <label style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem;" for="nickname">Nickname</label>
+                    <input type="text" id="nickname" name="nickname" required placeholder="e.g. zhangsan@netease"
+                           style="width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--color-rule); border-radius: 4px; font-size: 0.95rem; font-family: inherit; background: white;">
+                </div>
+
+                <div style="margin-bottom: 0.9rem;">
+                    <label style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem;" for="contact">WeChat ID or any contact</label>
+                    <input type="text" id="contact" name="contact" required placeholder="WeChat / Twitter / LinkedIn / etc."
+                           style="width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--color-rule); border-radius: 4px; font-size: 0.95rem; font-family: inherit; background: white;">
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem;" for="direction">Technical direction</label>
+                    <input type="text" id="direction" name="direction" required placeholder="agent runtime / RAG / multi-agent orchestration / FinTech / DevOps / ..."
+                           style="width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--color-rule); border-radius: 4px; font-size: 0.95rem; font-family: inherit; background: white;">
+                </div>
+
+                <button type="submit" class="btn"
+                        style="background: var(--color-link); color: white; border: none; padding: 0.6rem 1.3rem; border-radius: 4px; font-size: 0.95rem; font-weight: 600; cursor: pointer; font-family: inherit;">
+                    Send
+                </button>
+            </form>
+
+            <p style="margin-top: 1rem; font-size: 0.88rem; color: var(--color-text-muted);">
+                Prefer GitHub? Open a discussion or issue on
+                <a href="https://github.com/huangjia2019/agent-design-patterns/discussions" target="_blank" rel="noopener">agent-design-patterns</a>.
             </p>
         </section>
 
@@ -184,7 +219,7 @@
                 <a href="/" style="color: var(--color-text-muted);">EN</a> ·
                 <a href="/zh/" style="color: var(--color-text-muted);">中文</a> ·
                 <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener" style="color: var(--color-text-muted);">GitHub</a> ·
-                <a href="mailto:contact@adpsagent.com" style="color: var(--color-text-muted);">contact@adpsagent.com</a>
+                <a href="/#reach-out" style="color: var(--color-text-muted);">Reach out</a>
             </p>
         </footer>
 

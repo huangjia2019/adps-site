@@ -31,12 +31,21 @@ Operating notes for Claude when working on this repository.
 - Push to `main` → auto-publish (1-3 min)
 - DNS: `adpsagent.com` apex + `www` CNAME → `huangjia2019.github.io`
 
+## Pending setup (user action required)
+
+- **Formspree form ID**: the "Reach out" form on `/` and `/zh/` has `action="https://formspree.io/f/YOUR_FORM_ID"` as a placeholder. Steps:
+  1. Sign up at [formspree.io](https://formspree.io) (free tier = 50 submissions/month)
+  2. Create a new form, name it "ADPS Reach Out"
+  3. Copy the form's endpoint URL (looks like `https://formspree.io/f/abcd1234`)
+  4. Replace `YOUR_FORM_ID` everywhere: `grep -rl YOUR_FORM_ID . | xargs sed -i 's|formspree.io/f/YOUR_FORM_ID|formspree.io/f/abcd1234|g'`
+  5. Submissions land in the inbox of whatever email you signed up with — store there or export to spreadsheet
+- **GoatCounter**: same pattern. Sign up at [goatcounter.com](https://www.goatcounter.com), claim `adps` subdomain. Script in HTML already points to `adps.goatcounter.com/count`.
+
 ## Future work
 
 - Migrate `agent-design-patterns` repo from `huangjia2019/*` to a future `ADPS` GitHub Organization. All current links use `huangjia2019/agent-design-patterns` and will need a sweep.
-- The matrix on `/patterns/` is currently text-only — could embed a static rendering of the 7×6 grid (use the `render_matrix_28.py` output from `01-Agent设计模式之美/v4/final/01-范式觉醒/pictures/01-02/`).
 - Add per-pattern detail pages under `/patterns/<pattern-slug>/` once the catalog stabilizes.
-- A `/news/` or `/announcements/` page for founding-event records (June 5 2026 launch, etc.).
+- Replace SVG avatar placeholders with real head shots (240×240 cropped, named `avatar-jia.png` etc. — will override SVGs).
 
 ## Anti-patterns to avoid
 
