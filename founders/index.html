@@ -26,7 +26,7 @@
                 <a href="/patterns/">Patterns</a>
                 <a href="/research/">Research</a>
                 <a href="/positions/">Positions</a>
-                <a href="/founders/" style="color: var(--color-link);">Founders</a>
+                <a href="/founders/" style="color: var(--color-link);">Team</a>
                 <a href="/news/">News</a>
                 <a href="/join/">Join</a>
                 <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener">GitHub</a>
@@ -38,15 +38,18 @@
     <main class="container content">
 
         <article class="essay">
-            <h1 style="font-size: 2.1rem; margin-bottom: 0.5rem;">Founders</h1>
-            <p style="color: var(--color-text-muted); margin-bottom: 2rem;">Four founding members, four forces.</p>
+            <h1 style="font-size: 2.1rem; margin-bottom: 0.5rem;">Team</h1>
+            <p style="color: var(--color-text-muted); margin-bottom: 2rem;">Founders, advisors, and the expert group.</p>
 
             <p>
                 ADPS is not a single-author hero narrative. It is a small engineering community
                 carrying Chinese practitioners' field experience into the global conversation about
                 agent architecture. The four founding members each anchor one of the forces this work needs:
                 <strong>architecture language, software engineering, open-source ecosystem, enterprise deployment.</strong>
+                An advisor and an expert group extend that base into frontier research, knowledge engineering, and reference implementation.
             </p>
+
+            <h2>Founders</h2>
 
             <div style="display: grid; grid-template-columns: 90px 1fr; gap: 1.25rem; align-items: center; margin-top: 2.5rem;">
                 <img src="/images/avatar-jia.svg" alt="Jia Huang" style="width: 90px; height: 90px; border-radius: 50%;">
@@ -135,24 +138,9 @@
 
             <hr>
 
-            <h2>Expert Advisors</h2>
+            <h2>Advisor</h2>
 
             <div style="margin-top: 2rem;">
-                <h3 style="margin-bottom: 0.2rem;">Haofen Wang (王昊奋)</h3>
-                <p style="color: var(--color-badge); font-weight: 600; font-size: 0.92rem; letter-spacing: 0.04em; margin: 0 0 0.6rem 0;">KNOWLEDGE GRAPH · ONTOLOGY · SYSTEMATIZATION</p>
-                <p>
-                    Distinguished Research Professor and doctoral supervisor at Tongji University.
-                    Co-initiator of OpenKG, the largest open Chinese knowledge-graph alliance, and founder
-                    of the zhishi.me Chinese knowledge graph. Director of the CCF Terminology Committee,
-                    Chair of the CCF Knowledge Graph SIG, and deputy secretary-general of the CIPS Technical
-                    Committee on Language and Knowledge Computing. Author of <em>Knowledge Graph: Methodology,
-                    Practice and Application</em>; research spans knowledge graphs, natural language processing,
-                    question answering, and conversational interaction.
-                </p>
-                <p><strong>Contribution:</strong> systematization rigor — bringing knowledge-graph and ontology discipline to the pattern language, so the catalog holds together as a navigable, queryable knowledge system rather than a flat list.</p>
-            </div>
-
-            <div style="margin-top: 2.5rem;">
                 <h3 style="margin-bottom: 0.6rem;">Joey Tianyi Zhou (周天异)</h3>
                 <p>
                     A*STAR IAIC Agent Chapter Director.
@@ -162,12 +150,40 @@
                 </p>
             </div>
 
+            <hr>
+
+            <h2>Expert Group</h2>
+
+            <div style="margin-top: 2rem;">
+                <h3 style="margin-bottom: 0.2rem;">Haofen Wang (王昊奋)</h3>
+                <p style="color: var(--color-badge); font-weight: 600; font-size: 0.92rem; letter-spacing: 0.04em; margin: 0 0 0.6rem 0;">KNOWLEDGE GRAPH · KNOWLEDGE-ENHANCED LLM · SYSTEMATIZATION</p>
+                <p>
+                    Tenured Professor and doctoral supervisor at Tongji University, focused on knowledge graphs
+                    and knowledge-enhanced large language models. His core open-source work includes
+                    OpenSPG (an enterprise knowledge graph), KAG-Thinker (the first open-source knowledge-enhanced
+                    reasoning model, 10k+ GitHub stars), MemOS (a memory-native operating system for LLMs, 1M+ calls/day),
+                    and AI-Ceping (an LLM-evaluation crowdsourcing platform, 300k monthly active users) —
+                    deployed across airport operations, financial risk control, and in-cabin interaction.
+                </p>
+                <p>
+                    Over the past five years he has published three monographs and 45 papers as first or
+                    corresponding author at venues including CVPR, WWW, ICLR, ACL, AAAI, and IJCAI, with 12,700+
+                    Google Scholar citations (6,600+ on a single paper); awards include DASFAA 2025 Best Student
+                    Paper and HCII 2024 Best Paper. Founding rotating chair of OpenKG, the largest open Chinese
+                    knowledge-graph community; executive editor of <em>Data Intelligence</em>; secretary-general of the
+                    CCF NLP Technical Committee; deputy secretary-general of the CIPS Language and Knowledge Computing Committee.
+                </p>
+                <p><strong>Contribution:</strong> systematization rigor — bringing knowledge-graph and knowledge-enhanced-LLM discipline to the pattern language, so the catalog holds together as a navigable, queryable knowledge system rather than a flat list.</p>
+            </div>
+
             <div style="margin-top: 2.5rem;">
                 <h3 style="margin-bottom: 0.2rem;">Haili Zhang (张海立)</h3>
-                <p style="color: var(--color-badge); font-weight: 600; font-size: 0.92rem; letter-spacing: 0.04em; margin: 0 0 0.6rem 0;">LANGCHAIN AMBASSADOR · REFERENCE IMPLEMENTATION</p>
+                <p style="color: var(--color-badge); font-weight: 600; font-size: 0.92rem; letter-spacing: 0.04em; margin: 0 0 0.6rem 0;">LANGCHAIN AMBASSADOR · OPEN SOURCE · REFERENCE IMPLEMENTATION</p>
                 <p>
-                    LangChain Ambassador and organizer of the LangChain Shanghai Community.
-                    Hosts in-depth meetups on LangSmith Agent Builder, Deep Agents, and the LangGraph ecosystem.
+                    Author of the <em>LangGraph in Action</em> and <em>LangChain in Action</em> practical guides,
+                    LangChain Ambassador, and LFAPAC open-source evangelist. A Bilibili creator with a following in
+                    the tens of thousands, long focused on the practical landing and advocacy of GenAI, cloud-native,
+                    and frontier internet technology.
                 </p>
                 <p><strong>Contribution:</strong> reference-implementation supplement — mapping each ADPS pattern to its LangChain / LangGraph realization so the pattern language has runnable code anchors in the most widely adopted agent framework.</p>
             </div>
