@@ -90,6 +90,66 @@
                 </figcaption>
             </figure>
 
+            <h2>33 模式白皮书</h2>
+            <p>
+                矩阵里的每一格，背后都有一页企业级说明文档：它解决什么问题、什么时候该用、哪里容易出错、上线后看哪些指标。
+                面向产品、架构、研发、合规、管理各类角色——不是实践课程，而是可以直接拿去对齐团队的干净技术参考。
+            </p>
+            <h3>感知 Perception · 4</h3>
+            <ul style="list-style: none; margin: 0.5rem 0 1.75rem 0; padding: 0;">
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/p1-context-triage/" style="font-weight: 600;">P1 · 上下文分诊</a><span style="color: var(--color-text-muted);"> — 候选信息总量超出 context 窗口预算时，决定谁先进、谁等门外、谁压根不预加载。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/p2-semantic-compaction/" style="font-weight: 600;">P2 · 语义压缩</a><span style="color: var(--color-text-muted);"> — Agent 跑久了 context 装满，得压；压的时候保留什么、丢什么、保到什么程度，决定它接下来还能不能想清楚。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/p3-progressive-discovery/" style="font-weight: 600;">P3 · 渐进发现</a><span style="color: var(--color-text-muted);"> — Agent 面对陌生信息空间且不知道相关信息在哪时，先看一眼再决定钻多深，通过广扫→精读→深追三阶段循环把它探明白。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/p4-multi-modal-fusion/" style="font-weight: 600;">P4 · 多模态融合</a><span style="color: var(--color-text-muted);"> — Agent 接到的输入有图、有文、有表、有日志，把每一种转换成最适合 LLM 消化的形态，再合并喂给推理层。</span></li>
+            </ul>
+            <h3>记忆 Memory · 5</h3>
+            <ul style="list-style: none; margin: 0.5rem 0 1.75rem 0; padding: 0;">
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/m1-hierarchical-retention/" style="font-weight: 600;">M1 · 分层保留</a><span style="color: var(--color-text-muted);"> — 把 agent 的记忆按作用域切成多层，每层独立存储、独立生命周期、独立加载策略，新会话从粗到细加载。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/m2-rag-pipeline/" style="font-weight: 600;">M2 · 检索增强生成</a><span style="color: var(--color-text-muted);"> — 给 agent 配一个外挂图书馆，让它在每次需要超出 context 容量的知识时，能查、能筛、能迭代地查回来用。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/m3-progress-tracking/" style="font-weight: 600;">M3 · 进度追踪</a><span style="color: var(--color-text-muted);"> — Agent 在长任务中显式维护一份结构化的 todo list，每一轮把状态外部化，让 agent 自己和用户都能看见做到哪了。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/m4-failure-journals/" style="font-weight: 600;">M4 · 失败日记</a><span style="color: var(--color-text-muted);"> — Agent 把每次失败结构化记录（哪一步失败、什么错、根因、怎么补救），跨任务持久化，下次类似情况主动召回。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/m5-procedural-memory/" style="font-weight: 600;">M5 · 程序性记忆</a><span style="color: var(--color-text-muted);"> — 把一类任务的成功执行流程凝固成可命名、可加载、可复用的结构化资产，下次同类任务直接调用，跳过试错进入主路。</span></li>
+            </ul>
+            <h3>推理 Reasoning · 5</h3>
+            <ul style="list-style: none; margin: 0.5rem 0 1.75rem 0; padding: 0;">
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/r1-chain-of-thought/" style="font-weight: 600;">R1 · 思维链</a><span style="color: var(--color-text-muted);"> — 把模型的推理过程显性化成一段可存储、可审计、可跨模型迁移的结构化数据，让"为什么得出这个结论"有据可查。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/r2-complexity-based-routing/" style="font-weight: 600;">R2 · 复杂度路由</a><span style="color: var(--color-text-muted);"> — 在查询进入主循环之前按复杂度信号选模型加 effort 档位，让简单查询走便宜模型、复杂查询才用贵模型，用分流换账单。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/r3-parallel-exploration/" style="font-weight: 600;">R3 · 并行探索</a><span style="color: var(--color-text-muted);"> — 同一个查询内故意启动 N 条独立推理链，再用聚合策略合成单一答案，用算力换准确度。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/r4-iterative-hypothesis-testing/" style="font-weight: 600;">R4 · 迭代假设验证</a><span style="color: var(--color-text-muted);"> — Agent 形成假设、用证据验证、根据结果修正，循环到证据收敛或达到迭代上限，把科学方法搬进推理。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/r5-talker-reasoner/" style="font-weight: 600;">R5 · 双模架构</a><span style="color: var(--color-text-muted);"> — 把 Agent 拆成快而浅的 Talker 和慢而深的 Reasoner，通过共享 belief state 协同，让 Agent 在深度思考的同时还能即时跟用户说话。</span></li>
+            </ul>
+            <h3>行动 Action · 5</h3>
+            <ul style="list-style: none; margin: 0.5rem 0 1.75rem 0; padding: 0;">
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/a1-tool-dispatch/" style="font-weight: 600;">A1 · 工具调度</a><span style="color: var(--color-text-muted);"> — Agent 在每一步行动前，由工程层依据工具元数据从工具集中挑出最合适的工具，而不是让模型自己临场决定。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/a2-plan-and-execute/" style="font-weight: 600;">A2 · 规划执行</a><span style="color: var(--color-text-muted);"> — Agent 先生成完整 plan（含依赖结构、资源预估、审批节点），再按 plan 执行，遇到偏离时局部 replan 而非全局重写。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/a3-prompt-chaining/" style="font-weight: 600;">A3 · 提示链</a><span style="color: var(--color-text-muted);"> — 把一个复杂任务拆成一串小任务，每一步用一段独立的 prompt 跑，前一步的输出作为下一步的输入，串起来完成。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/a4-minimal-tool-set/" style="font-weight: 600;">A4 · 最简工具集</a><span style="color: var(--color-text-muted);"> — 把 agent 的工具集控制在合理上限（通常 10 到 30 个），砍掉低频、合并相似、把次要工具下沉到 sub-agent，给模型留下选择的专注力。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/a5-guardrail-sandwich/" style="font-weight: 600;">A5 · 守卫三明治</a><span style="color: var(--color-text-muted);"> — 在 agent 每个有副作用或高风险的动作前后套上 pre-check 和 post-check 夹层，把它从"自由行动"约束到"被监督的行动"。</span></li>
+            </ul>
+            <h3>反思 Reflection · 4</h3>
+            <ul style="list-style: none; margin: 0.5rem 0 1.75rem 0; padding: 0;">
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/f1-generator-critic/" style="font-weight: 600;">F1 · 生成批评</a><span style="color: var(--color-text-muted);"> — 一个 agent 内置两个角色，Generator 写、Critic 评，循环改进直到 critic 通过或达到迭代上限。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/f2-skill-package/" style="font-weight: 600;">F2 · 技能包</a><span style="color: var(--color-text-muted);"> — 把反复成功的工作流封装成可命名、可加载、可复用的结构化资产，下次同类任务直接调用而非从零摸索。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/f3-experience-replay/" style="font-weight: 600;">F3 · 经验回放</a><span style="color: var(--color-text-muted);"> — agent 在新任务来时主动检索历史相似任务的 trajectory，把可复用部分注入当前 context，让学过的东西不白学。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/f4-self-heal-loop/" style="font-weight: 600;">F4 · 自愈循环</a><span style="color: var(--color-text-muted);"> — agent 在 deterministic 失败信号触发时自动诊断、修复、验证、循环到收敛或熔断。</span></li>
+            </ul>
+            <h3>协作 Collaboration · 5</h3>
+            <ul style="list-style: none; margin: 0.5rem 0 1.75rem 0; padding: 0;">
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/c1-hierarchical-delegation/" style="font-weight: 600;">C1 · 层级委派</a><span style="color: var(--color-text-muted);"> — 一个 supervisor agent 动态拆分任务、派给 N 个 worker agent 执行、再把结果合并，是经典的多 agent 主管-工人协作。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/c2-fan-out-gather/" style="font-weight: 600;">C2 · 扇出聚合</a><span style="color: var(--color-text-muted);"> — orchestrator 把一批可独立执行的子任务并行分发给 N 个 sub-agent，每个独立完成，最后由 aggregator 用聚合策略合并成单一输出，用 N 倍算力换 1/N 时长。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/c3-adversarial-review/" style="font-weight: 600;">C3 · 对抗评审</a><span style="color: var(--color-text-muted);"> — 把一个 generator agent 跟一个或多个独立 critic agent 配在一起，通过结构化对抗循环改进输出，critic 必须用不同模型、不同 family、不同 prompt 激励。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/c4-handoff-chain/" style="font-weight: 600;">C4 · 交接链</a><span style="color: var(--color-text-muted);"> — 把一个长流程拆成 N 个职责清晰的 agent，前一棒处理完后通过结构化 HandoffPacket（不是裸文本）把关键状态传给下一棒，每一棒只擅长一件事。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/c5-sub-agent-isolation/" style="font-weight: 600;">C5 · 子代理隔离</a><span style="color: var(--color-text-muted);"> — 子 agent 在独立 context 中执行，返回前必须压缩成 schema 化 artifact，主 agent 只看 artifact 不看 raw trajectory。</span></li>
+            </ul>
+            <h3>治理 Governance · 5</h3>
+            <ul style="list-style: none; margin: 0.5rem 0 1.75rem 0; padding: 0;">
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/g1-approval-gate/" style="font-weight: 600;">G1 · 审批门</a><span style="color: var(--color-text-muted);"> — 高 blast radius 或不可逆的动作执行前，按风险路由到自动放行 / 留痕 / 人审三档之一，让人在关键决策点保留最后否决权。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/g2-blast-radius-control/" style="font-weight: 600;">G2 · 爆炸半径控制</a><span style="color: var(--color-text-muted);"> — 给动作分级（readonly / mutating / catastrophic），用嵌套的工程边界把单次失败的最大损失硬上限锁死。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/g3-progressive-commitment/" style="font-weight: 600;">G3 · 渐进承诺</a><span style="color: var(--color-text-muted);"> — Agent 的权限从只读起步，按阶段顺序解锁到可写、再到不可逆，每升一档要拿证据挣，出事立即降级。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/g4-hooks-pipeline/" style="font-weight: 600;">G4 · 钩子流水线</a><span style="color: var(--color-text-muted);"> — 在工具调用与 agent step 的前后挂上 deterministic 拦截层，把不该让模型思考的事从 prompt 剥离到 hook 来保证。</span></li>
+                <li style="margin-bottom: 0.7rem; line-height: 1.55;"><a href="/zh/patterns/g5-observability-harness/" style="font-weight: 600;">G5 · 可观测性</a><span style="color: var(--color-text-muted);"> — 给 Agent 全生命周期挂五维 telemetry，跨 agent 串联 trace，让事后能回放、监管能审计、产品能决策。</span></li>
+            </ul>
+
             <h2>矩阵</h2>
             <p>
                 完整矩阵、可运行代码、每个模式对应的工程切片，都在配套 GitHub 仓库里：

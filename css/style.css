@@ -960,6 +960,28 @@ article.essay pre code {
     font-size: 0.85rem;
     line-height: 1.5;
 }
+/* Markdown-rendered tables inside essays (pattern white papers). Scoped so
+   existing pages are untouched. */
+article.essay table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+article.essay thead th {
+    background: var(--color-quote-bg);
+    border-bottom: 2px solid var(--color-rule);
+    font-weight: 600;
+}
+article.essay th,
+article.essay td {
+    border: 1px solid var(--color-rule);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+}
 article.essay hr {
     border: 0;
     text-align: center;

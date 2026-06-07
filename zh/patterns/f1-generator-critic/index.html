@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 生成批评 · 模式白皮书 · ADPS</title>
+    <meta name="description" content="一个 agent 内置两个角色，Generator 写、Critic 评，循环改进直到 critic 通过或达到迭代上限。">
+    <meta property="og:image" content="https://adpsagent.com/images/og-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://adpsagent.com/images/og-card.png">
+
+    <link rel="canonical" href="https://adpsagent.com/zh/patterns/f1-generator-critic/">
+    <link rel="alternate" hreflang="zh" href="https://adpsagent.com/zh/patterns/f1-generator-critic/">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="page-essay">
+
+    <header class="site-header">
+        <div class="container">
+            <a href="/zh/" class="site-brand">ADPS</a>
+            <nav class="site-nav">
+                <a href="/zh/patterns/" style="color: var(--color-link);">模式矩阵</a>
+                <a href="/zh/research/">论文</a>
+                <a href="/zh/founders/">创始成员</a>
+                <a href="/zh/news/">新闻</a>
+                <a href="/zh/join/">加入我们</a>
+                <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener">GitHub</a>
+                <a href="/patterns/" class="lang-switch">EN</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container content">
+
+        <article class="essay">
+            <p style="font-size: 0.9rem; color: var(--color-text-faint); margin-bottom: 1.75rem;">
+                <a href="/zh/patterns/" style="color: var(--color-text-muted);">模式矩阵</a>
+                <span style="margin: 0 0.45rem;">/</span>模式白皮书<span style="margin: 0 0.45rem;">/</span>F1
+            </p>
+
+            <h1>F1 · Generator-Critic · 生成-批评</h1>
+            <table>
+            <thead>
+            <tr>
+            <th style="text-align: left;">字段</th>
+            <th style="text-align: left;">值</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;">反思 Reflection × 循环 Loop（转）</td>
+            </tr>
+            <tr>
+            <td style="text-align: left;"><strong>成本档</strong></td>
+            <td style="text-align: left;">②（2-4× 单次调用）</td>
+            </tr>
+            <tr>
+            <td style="text-align: left;"><strong>课程对应</strong></td>
+            <td style="text-align: left;">06-02</td>
+            </tr>
+            <tr>
+            <td style="text-align: left;"><strong>目录归属</strong></td>
+            <td style="text-align: left;">全集 33 模式之一 · 反思模块 4 模式之一</td>
+            </tr>
+            <tr>
+            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;">一个 agent 内置两个角色，Generator 写、Critic 评，循环改进直到 critic 通过或达到迭代上限。</td>
+            </tr>
+            </tbody>
+            </table>
+            <hr />
+            <h2>它解决什么问题</h2>
+            <p>主观判断密集的任务没有标准答案，只有质量谱系——写作、设计、代码风格、产品文案、学术摘要都属于这一类。便宜模型第一次往往写不到位，但人类作家写完文章会回头读三遍，每读一遍改一遍，到边际收益降下来就停笔。这个"自己回看、自己改进"的能力是输出质量的关键，单次生成拿不到。</p>
+            <p>Generator-Critic 把这个流程编码进 agent：generator 写初稿，critic 回看挑问题，generator 拿着反馈再改，循环到 critic 满意或触及迭代上限。它是反思模块里最简的工程实现，2023 年 Reflexion 论文奠定，到 2026 年仍是反思模式的工业基线——Self-Refine 在 7 个任务上平均拿到约 20% 的绝对提升，且不需要训练数据。</p>
+            <h2>为什么坐标是「反思 × 循环」</h2>
+            <ul>
+            <li><strong>纵轴 · 反思</strong>：critic 是 agent 对自己输出的审视，让 agent 自己批评自己，这是最经典的反思形态。它不引入新 agent，也不检索外部知识，整个回看动作发生在同一个推理过程内部。</li>
+            <li><strong>横轴 · 循环</strong>：结构是 generate → critique → revise 的反复迭代，终止条件是 max_rounds 触底或 critic 判定通过。单次走完一遍也是合法实现，但循环是它默认的工作姿态，迭代上限是把"何时停笔"显式编码进系统。</li>
+            </ul>
+            <h2>核心机制</h2>
+            <p>一个 Generator-Critic 闭环由三段组成：</p>
+            <ol>
+            <li><strong>生成</strong>：generator 产出初稿。这一步用什么模型决定了 critic 要补多少。</li>
+            <li><strong>批评</strong>：critic 评估当前输出，产出结构化判决（issues 列表 / severity / 一个显式的 no_changes_needed 字段）。Reflexion 论文的关键创新是 critic 产出自然语言 reflection 文本而非单纯打分，告诉 generator 哪里错、为什么错、下次怎么改。</li>
+            <li><strong>改进</strong>：generator 拿着 critique 重写。然后回到第 2 步，直到 critic 通过或迭代触底。</li>
+            </ol>
+            <p>critic 的可靠性是整个闭环的命门。它的来源按可靠性递增分三类，选哪一类取决于任务有没有 deterministic 信号：</p>
+            <table>
+            <thead>
+            <tr>
+            <th style="text-align: left;">Critic 类型</th>
+            <th style="text-align: left;">适用场景</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td style="text-align: left;">Self-Critic（同模型反向 prompt）</td>
+            <td style="text-align: left;">主观任务、无外部验证信号，最简但有同源盲区</td>
+            </tr>
+            <tr>
+            <td style="text-align: left;">Cross-Model（不同 vendor 的模型评）</td>
+            <td style="text-align: left;">需要打破单模型偏见，跨族系视角</td>
+            </tr>
+            <tr>
+            <td style="text-align: left;">External-Grounded（test / schema / 引用库验证）</td>
+            <td style="text-align: left;">任务有 deterministic 信号，最可靠</td>
+            </tr>
+            </tbody>
+            </table>
+            <h2>适合的生产场景</h2>
+            <ul>
+            <li><strong>内容生成类任务</strong>：写作、翻译、摘要、文案、学术摘要润色——没有客观对错但有明显质量差异，critic 能稳定看出"哪里不够好"。</li>
+            <li><strong>代码风格与可读性优化</strong>：命名、注释、结构调整这类不影响正确性但影响质量的改进。</li>
+            <li><strong>便宜模型托底的高频任务</strong>：用 cheap model 做 generator，critic 把质量抬到可接受线，整体成本远低于直接上昂贵模型。</li>
+            </ul>
+            <h2>容易出错的地方</h2>
+            <ul>
+            <li><strong>在 Reflection Light 领域硬用</strong>：人一眼能看出对错、有客观判据的任务（数学题、SQL、单元测试结果），直接拿测试或 schema 当 critic 比让 LLM 自评准得多，套 Generator-Critic 是绕远路。</li>
+            <li><strong>critic 比 generator 还弱</strong>：critic 模型能力不足时，它评不出真问题反而引入噪声，闭环越跑越差。critic 至少要和 generator 同档或更强。</li>
+            <li><strong>critic 强行找问题</strong>：critic prompt 没明示"no changes needed 是合法选项"，它会凑数虚构问题。Reflexion 在 MBPP 上测出 critic 给已经正确的代码挑错的概率达 16.3%，加一句"已合格就输出 no changes needed"能把这个比例显著压下来。</li>
+            <li><strong>同源偏差不设防</strong>：critic 和 generator 是同一个 LLM 时存在 self-enhancement bias，它倾向给自己的输出打高分。高 stake 任务要换 vendor 或加 external grounding。</li>
+            <li><strong>迭代不熔断</strong>：不设 max_iterations 会触发 over-thinking——critic 把上一轮的虚构当依据继续虚构，几轮后 agent 说服自己输出严重有问题。</li>
+            </ul>
+            <h2>关键指标</h2>
+            <ul>
+            <li><strong>critic 收敛率</strong>（健康区 2-3 轮内收敛）：超过 3 轮还不通过，说明 critic 标准失调或 generator 能力不够。</li>
+            <li><strong>phantom issue 率</strong>（健康区 &lt;10%）：critic 对已合格输出挑错的比例。高于 15% 说明 critic prompt 缺"no changes needed"出口。</li>
+            <li><strong>critic-vs-expert 一致率</strong>（健康区 &gt;70%）：每周抽 50-100 条 critic 输出对比专家判断。低于 70% 要重写 critic prompt 或换模型。</li>
+            <li><strong>质量增量</strong>（健康区比单次生成高 5-15%）：低于 3% 说明反思没起作用，高于 25% 说明 generator 单次配置本身有问题，先修 generator。</li>
+            </ul>
+            <h2>最小骨架</h2>
+            <pre><code>output = generator(task)
+for i in range(MAX_ITERATIONS):       # MAX=3, Aider 同源熔断
+    if external_critic:               # 有 deterministic 信号优先
+        critique = external_critic(task, output)
+    elif multi_critic:                # 多角色并行 + 仲裁
+        critique = merge(critic(task, output, role=r) for r in roles)
+    else:
+        critique = critic(task, output)
+    if critique.no_changes_needed:    # 合法出口, 防 phantom issue
+        return output, &quot;converged&quot;
+    output = generator(task, previous=output, feedback=critique)
+return output, &quot;max_iterations_reached&quot;   # 触底转 HITL
+</code></pre>
+            <p>四个工程要点：critic prompt 必须明示 no_changes_needed 是合法选项；有 test/schema/引用库等 deterministic 信号时优先走 external critic；max_iterations 不要随便调大，3 是经验上的最优；完整 history 留档作为 critic calibration 的源数据。</p>
+            <h2>企业落地一例</h2>
+            <p>一家学术出版社的论文摘要润色 Agent，第一版用单 prompt 完成（"请优化这段摘要"），线下评测平均编辑评分 8.2/10。第二版加了 Generator-Critic 循环（"写完自己 review，找 3 个改进点再优化"），平均分反而掉到 7.4——复盘 trace 发现 critic 在过度修改，把简洁摘要改写成冗长版，三个 issue 全是虚构的。第三版改了三件事：critic prompt 加"已写好就输出 no changes needed"，phantom issue 率从 16.3% 降到 7%；引入 3 角色 multi-critic（学术严谨性 / 简洁性 / 术语准确度）并行评后仲裁，其中术语 critic 是 external-grounded，查引用数据库验证摘要里的 cite 是否真实存在；每周抽 50 条 critic 输出对比专家判断校准 prompt。修完平均分升到 8.9，比第一版基线高 0.7，代价是单次 token 成本涨 2.8 倍。摘要属于 high-stake 内容，这笔账划算。</p>
+            <h2>与其他模式的关系</h2>
+            <ul>
+            <li><strong>Self-Heal Loop（F4）</strong>：兄弟模式，边界要钉清楚。Generator-Critic 是"生成后改进"，起点是输出可用、循环是质量提升、replay 是 optional；Self-Heal Loop 是"失败后修复"，起点是输出已坏、loop 是 mandatory 结构。前者用于主观任务，后者用于有 deterministic 失败信号的任务。</li>
+            <li><strong>Adversarial Review（协作模块）</strong>：升级形态。Generator-Critic 是"同一个模型换 prompt"，Adversarial Review 是"独立 agent 带对抗激励"。前者解决"agent 怎么改自己"，一个 LLM 进程加两段 prompt 即可；后者解决"决策怎么经过 audit-grade 独立审查"，需要 model routing、独立 trace、跨 agent 编排，token 成本约 9 倍。错代价低用前者，金融审批 / 医疗诊断这类需要监管独立性的场景升级到后者。</li>
+            <li><strong>Skill Package（F2）</strong>：衔接关系。Generator-Critic 改的是当下这次输出，Skill Package 沉淀的是跨任务的成功流程。</li>
+            </ul>
+            <h2>一句话记住它</h2>
+            <p>Generator-Critic 的本质不是"加一个评审"，而是把"评估比生成简单"这条软件工程几十年的不对称性显式化——让同一个模型用"易"（评估）反过来约束"难"（生成）。</p>
+
+            <hr>
+            <p style="font-size: 0.92rem; color: var(--color-text-muted);">
+                本页属于 ADPS 33 模式白皮书。返回 <a href="/zh/patterns/">模式矩阵与白皮书目录</a>，
+                或查看配套 <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener">可运行代码目录</a>。
+            </p>
+        </article>
+
+        <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-rule); color: var(--color-text-faint); font-size: 0.88rem; max-width: 52rem;">
+            <p>ADPS · Agent Design Patterns Society · 2026 年发起</p>
+        </footer>
+
+    </main>
+
+    <script data-goatcounter="https://adps.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
