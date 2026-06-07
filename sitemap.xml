@@ -98,4 +98,16 @@
   <url><loc>https://adpsagent.com/zh/patterns/g3-progressive-commitment/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://adpsagent.com/zh/patterns/g4-hooks-pipeline/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://adpsagent.com/zh/patterns/g5-observability-harness/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <!-- positions / 立场 -->
+  <url><loc>https://adpsagent.com/positions/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.8</priority><xhtml:link rel="alternate" hreflang="en" href="https://adpsagent.com/positions/"/><xhtml:link rel="alternate" hreflang="zh" href="https://adpsagent.com/zh/positions/"/></url>
+  <url><loc>https://adpsagent.com/positions/when-to-use-multi-agent/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.7</priority><xhtml:link rel="alternate" hreflang="en" href="https://adpsagent.com/positions/when-to-use-multi-agent/"/><xhtml:link rel="alternate" hreflang="zh" href="https://adpsagent.com/zh/positions/when-to-use-multi-agent/"/></url>
+  <url><loc>https://adpsagent.com/positions/where-prompt-engineering-fits/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.7</priority><xhtml:link rel="alternate" hreflang="en" href="https://adpsagent.com/positions/where-prompt-engineering-fits/"/><xhtml:link rel="alternate" hreflang="zh" href="https://adpsagent.com/zh/positions/where-prompt-engineering-fits/"/></url>
+  <url><loc>https://adpsagent.com/positions/governance-and-safety/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.7</priority><xhtml:link rel="alternate" hreflang="en" href="https://adpsagent.com/positions/governance-and-safety/"/><xhtml:link rel="alternate" hreflang="zh" href="https://adpsagent.com/zh/positions/governance-and-safety/"/></url>
+  <url><loc>https://adpsagent.com/positions/evaluation-as-engineering/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.7</priority><xhtml:link rel="alternate" hreflang="en" href="https://adpsagent.com/positions/evaluation-as-engineering/"/><xhtml:link rel="alternate" hreflang="zh" href="https://adpsagent.com/zh/positions/evaluation-as-engineering/"/></url>
+  <url><loc>https://adpsagent.com/zh/positions/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://adpsagent.com/zh/positions/when-to-use-multi-agent/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://adpsagent.com/zh/positions/where-prompt-engineering-fits/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://adpsagent.com/zh/positions/governance-and-safety/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://adpsagent.com/zh/positions/evaluation-as-engineering/</loc><lastmod>2026-06-07</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>
