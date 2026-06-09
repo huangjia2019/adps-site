@@ -53,7 +53,7 @@
             <tbody>
             <tr>
             <td style="text-align: left;"><strong>双轴坐标</strong></td>
-            <td style="text-align: left;">感知 Perception × 分层 Hierarchy（分）</td>
+            <td style="text-align: left;">感知 Perception × 并行 Parallel（撒）</td>
             </tr>
             <tr>
             <td style="text-align: left;"><strong>成本档</strong></td>
@@ -77,10 +77,10 @@
             <h2>它解决什么问题</h2>
             <p>感知模块前三个模式处理的都是文本流，怎么挑、怎么压、怎么找。多模态融合换一种形态：PDF、图表、表格、扫描件、日志混在一起的异构信息。把一份 80 页研报整份喂给 vision 模型，y 轴刻度密、像素糊，市场规模 5800 亿被读成 5800 万，差了一千倍；全部 OCR 成纯文本又把图全丢了，研报里真正值钱的市场规模柱状图、竞争格局饼图坍缩成一句"图 3 显示市场份额"，Agent 读到等于没读到。</p>
             <p>多模态融合把这件事工程化，关键在数据进入上下文之前：哪一段该走 vision、哪一段该转文本、哪一段应该被丢掉。它处理的是 Agent 还没"想"之前的输入形态问题——形态错了，下游怎么挑、怎么压、怎么探都是在错误的形态上继续消耗。</p>
-            <h2>为什么坐标是「感知 × 分层」</h2>
+            <h2>为什么坐标是「感知 × 并行」</h2>
             <ul>
             <li><strong>纵轴 · 感知</strong>：融合处理的是多通道输入（PDF、图、音、结构化数据）合成统一表示，是感知最原始的"融合"问题，发生在推理之前。</li>
-            <li><strong>横轴 · 分层</strong>：每路数据交给各自的 specialist 处理器（PDF parser、OCR、table extractor、日志 sub-agent），各自转成最适合 LLM 的形态，再由一个中央 fuser 整合成统一的 prompt content。这是多处理器到中央聚合的层级结构，不是单链也不是单点路由。</li>
+            <li><strong>横轴 · 并行</strong>：每一路数据同时交给各自的 specialist 处理器（PDF parser、OCR、table extractor、日志 sub-agent）<strong>并行转换</strong>，各路互不依赖、可同时跑，再由一个 fuser 把多路结果<strong>聚合（gather）</strong>成统一的 prompt content。这是典型的扇出—聚合（fan-out / gather）：N 路并行处理 + 一次合并，不是单链顺序，也不是单点路由。</li>
             </ul>
             <h2>核心机制</h2>
             <p>融合的核心判断是给每一路数据选对载体，再合并。判定标准就一条铁律：空间信息是信号才保留为图，结构信息是信号该转 markdown。</p>
@@ -154,7 +154,7 @@ health_check：按形态盯 token 占比，异常形态早报警
             <h2>与其他模式的关系</h2>
             <ul>
             <li><strong>上下文分诊（P1）、语义压缩（P2）、渐进发现（P3）</strong>：融合在感知四把刀的最前。形态错了，下游 Triage 怎么挑、Compaction 怎么压、Discovery 怎么探都是在错误的形态上继续消耗。</li>
-            <li><strong>扇出聚合（C2，协作模块）</strong>：长日志三层流水线里把过滤后数据交给 sub-agent 处理，是分层聚合在感知层的体现——多个 specialist 处理器并行处理后汇到中央 fuser。</li>
+            <li><strong>扇出聚合（C2，协作模块）</strong>：长日志三层流水线里把过滤后数据交给 sub-agent 处理，是扇出聚合在感知层的体现——多个 specialist 处理器并行处理后汇到中央 fuser。</li>
             <li><strong>分层记忆（Memory 模块）</strong>：sub-agent 死循环的对策 Memory Pointer Pattern 与记忆模块共享同一思路——完整产物存外部 store，context 里只传 pointer。</li>
             </ul>
             <h2>一句话记住它</h2>
