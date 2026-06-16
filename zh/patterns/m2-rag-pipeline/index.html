@@ -53,7 +53,7 @@
             <tbody>
             <tr>
             <td style="text-align: left;"><strong>双轴坐标</strong></td>
-            <td style="text-align: left;">记忆 Memory × 路由 Route（选）</td>
+            <td style="text-align: left;">记忆 Memory × 链式 Chain（传）</td>
             </tr>
             <tr>
             <td style="text-align: left;"><strong>成本档</strong></td>
@@ -72,10 +72,10 @@
             <h2>它解决什么问题</h2>
             <p>企业知识库动辄几十万份文档加历史工单，任何 LLM 的 context window 都装不下，但 agent 不能因此回答"我不知道"。它需要在每次提问时，从海量语料里挑出最相关的几份临时塞进 context。这就是 RAG 要解决的事：把 input 之外的事实按需拉进来。</p>
             <p>2026 年生产级 RAG 的工程难点已经不是"能不能查到",而是"会不会查"。naive RAG 是一次查询一次返回，而真正能上生产的 RAG 让 agent 主导多步检索——看完第一批结果不满意就改写 query 再查，查到候选答案就主动找反例验证，跨多个语料做交叉对比。</p>
-            <h2>为什么坐标是「记忆 × 路由」</h2>
+            <h2>为什么坐标是「记忆 × 链式」</h2>
             <ul>
             <li><strong>纵轴 · 记忆</strong>：RAG 是外挂知识库，把 input 之外的事实拉进来，本质是"记下哪些事实、怎么把它调出来"，属于记忆模块里管 declarative knowledge 的部分。</li>
-            <li><strong>横轴 · 路由</strong>：不同 query 要路由到不同的 retrieval source——语义查询走 vector，精确关键词走 BM25，结构化关系走 KG 或 SQL。选哪个源、怎么融合多个源的结果，是路由决策。</li>
+            <li><strong>横轴 · 链式</strong>：RAG 的骨架是一条顺序流水线——query → embed → 召回 top-K → 重排 → 注入 context → 生成，每一步的输出直接进入下一步。混合检索、多源融合都是节点内的工程精雕，不改变链式骨架；agent 主导的多步检索是这条链外面再套一层循环，链本身依然成立。"RAG Pipeline"这个名字本身就在说它是 pipeline，一条事实从知识库流到答案的传递链。</li>
             </ul>
             <h2>核心机制</h2>
             <ol>
