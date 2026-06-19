@@ -53,12 +53,17 @@
             <tbody>
             <tr>
             <td style="text-align: left;"><strong>双轴坐标</strong></td>
-            <td style="text-align: left;">记忆 Memory × 编排 Orchestrate（调）</td>
+            <td style="text-align: left;">记忆 Memory × 编排 Orchestrate（协）</td>
             </tr>
             <tr>
             <td style="text-align: left;"><strong>成本档</strong></td>
             <td style="text-align: left;">①（低，状态字段读写开销小）</td>
-            </tr>            <tr>
+            </tr>
+            <tr>
+            <td style="text-align: left;"><strong>课程对应</strong></td>
+            <td style="text-align: left;">03-04</td>
+            </tr>
+            <tr>
             <td style="text-align: left;"><strong>目录归属</strong></td>
             <td style="text-align: left;">全集 33 模式之一 · 记忆模块 5 模式之一</td>
             </tr>
@@ -75,7 +80,7 @@
             <h2>为什么坐标是「记忆 × 编排」</h2>
             <ul>
             <li><strong>纵轴 · 记忆</strong>：它给 agent 一份"工作日志",跨 step 保留任务上下文，是记忆最简形式（session memory）——记着"我刚做了什么、现在在做什么、接下来做什么"。</li>
-            <li><strong>横轴 · 编排</strong>：进度追踪不是顺序传递，是把任务结构外部化成一份 agent 自己反复回看的中心 todo list——它不像链式那样"前一步输出当后一步输入"，而像项目经理手里的看板，agent 每一轮都先看看板再决定下一步。它跟规划执行（A2）也不同：规划执行的 plan 在 planner 头脑里推动 executor 跑，进度追踪的 todo 是 agent 自己写给自己看的中心调度面板。状态机里一次只允许一个 in_progress、其余 pending 的硬约束，正是 orchestrator pattern 在记忆轴上的表达。</li>
+            <li><strong>横轴 · 编排</strong>：进度追踪不落在某一个任务步骤里，而是横切在所有步骤之上——它维护一份贯穿整个长任务的 todo 状态，协调 agent 在多步之间不跑偏、断了能续、跳了能回。这种"站在所有步骤之上做协调"正是编排的姿态，而不是某一步把结果传给下一步的链式。</li>
             </ul>
             <h2>核心机制</h2>
             <ol>

@@ -53,12 +53,17 @@
             <tbody>
             <tr>
             <td style="text-align: left;"><strong>双轴坐标</strong></td>
-            <td style="text-align: left;">行动 Action × 链式 Chain（传）</td>
+            <td style="text-align: left;">行动 Action × 编排 Orchestrate（协）</td>
             </tr>
             <tr>
             <td style="text-align: left;"><strong>成本档</strong></td>
             <td style="text-align: left;">②（一次规划 + 多次执行，异构模型可显著压成本）</td>
-            </tr>            <tr>
+            </tr>
+            <tr>
+            <td style="text-align: left;"><strong>课程对应</strong></td>
+            <td style="text-align: left;">05-03</td>
+            </tr>
+            <tr>
             <td style="text-align: left;"><strong>目录归属</strong></td>
             <td style="text-align: left;">全集 33 模式之一 · 行动模块 5 模式之一</td>
             </tr>
@@ -72,10 +77,10 @@
             <h2>它解决什么问题</h2>
             <p>长任务里，逐步反应式（ReAct）的 agent 几乎注定翻车。一个 HR 招聘 agent 把 17 个工具全开放给模型自由决定每一步，结果是：把没面试通过的候选人薪酬发给了招聘经理、跳过背景调查直接发 offer、反复查同一份薪酬数据 50 次。根因是 agent 没有完整 plan——context window 装不下 12 步招聘流程的全貌，模型只能基于"上一步刚发生什么"决定下一步，没有全局视图。</p>
             <p>Plan-and-Execute 把动作端拆成两个阶段：先 plan，后 execute。规划阶段一次性把任务排成有序的多步，标清依赖、资源、必须人审的节点；执行阶段按 plan 推进。它的价值在于把宏观顺序从模型的临场判断里拿出来，钉死在一份可审计的计划里。</p>
-            <h2>为什么坐标是「行动 × 链式」</h2>
+            <h2>为什么坐标是「行动 × 编排」</h2>
             <ul>
-            <li><strong>纵轴 · 行动</strong>：agent 不是单步执行，而是把一个目标变成一连串对外动作。"先想后干"的两阶段属于行动端的编排，不是推理端的单点思考。</li>
-            <li><strong>横轴 · 链式</strong>：planning 和 execution 是显式的两个 chain 段——规划链产出 plan，执行链消费 plan，前段输出就是后段输入。这与提示链（A3）同属链式，区别在 A2 链上传的是结构化的 plan，A3 链上传的是逐段的文本输出。</li>
+            <li><strong>纵轴 · 行动</strong>：agent 不是单步执行，而是把一个目标变成一连串对外动作。"先想后干"的两阶段属于行动端，不是推理端的单点思考。</li>
+            <li><strong>横轴 · 编排</strong>：Plan-and-Execute 的中心是一个编排者——它持有完整 plan，按依赖图调度每一步、维护全局状态与检查点、在偏离时做局部 replan。这跟提示链（A3）的纯链式不同：A3 是前一段输出喂给后一段的线性传递，A2 是一个中心节点统筹多步，独立步骤可并行展开、关键节点落 checkpoint、出错可回退重规划。统筹与回收这一层，正是编排区别于链式的地方。</li>
             </ul>
             <h2>核心机制</h2>
             <p>Plan-and-Execute 的核心不是复杂，而是三件事：分家、审批闸门、context reset。Aider 的 architect mode 核心只有 9 行代码就把这三件事占全了——architect 出 plan，editor 清空上下文后执行 plan，中间默认要用户确认。</p>

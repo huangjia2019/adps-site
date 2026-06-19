@@ -58,7 +58,12 @@
             <tr>
             <td style="text-align: left;"><strong>成本档</strong></td>
             <td style="text-align: left;">②（中等，索引 + 检索 + 可选重排）</td>
-            </tr>            <tr>
+            </tr>
+            <tr>
+            <td style="text-align: left;"><strong>课程对应</strong></td>
+            <td style="text-align: left;">03-03</td>
+            </tr>
+            <tr>
             <td style="text-align: left;"><strong>目录归属</strong></td>
             <td style="text-align: left;">全集 33 模式之一 · 记忆模块 5 模式之一</td>
             </tr>
@@ -75,7 +80,7 @@
             <h2>为什么坐标是「记忆 × 链式」</h2>
             <ul>
             <li><strong>纵轴 · 记忆</strong>：RAG 是外挂知识库，把 input 之外的事实拉进来，本质是"记下哪些事实、怎么把它调出来"，属于记忆模块里管 declarative knowledge 的部分。</li>
-            <li><strong>横轴 · 链式</strong>：RAG 的骨架是一条顺序流水线——query → embed → 召回 top-K → 重排 → 注入 context → 生成，每一步的输出直接进入下一步。混合检索、多源融合都是节点内的工程精雕，不改变链式骨架；agent 主导的多步检索是这条链外面再套一层循环，链本身依然成立。"RAG Pipeline"这个名字本身就在说它是 pipeline，一条事实从知识库流到答案的传递链。</li>
+            <li><strong>横轴 · 链式</strong>：RAG 是一条顺序流水线——query 先 embed，再召回 top-K，再重排，再注入 prompt，最后交给生成。每一步的产物是下一步的输入，前一步传给后一步，是典型的链式传递。"RAG pipeline"这个名字本身就点明了它的链式骨架。即便中间用混合检索（语义加 BM25）选源，那也是链条里的一个环节，不改变整体的顺序流水线形态。</li>
             </ul>
             <h2>核心机制</h2>
             <ol>

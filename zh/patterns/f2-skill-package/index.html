@@ -53,12 +53,17 @@
             <tbody>
             <tr>
             <td style="text-align: left;"><strong>双轴坐标</strong></td>
-            <td style="text-align: left;">反思 Reflection × 层级 Hierarchy（分）</td>
+            <td style="text-align: left;">反思 Reflection × 路由 Route（选）</td>
             </tr>
             <tr>
             <td style="text-align: left;"><strong>成本档</strong></td>
             <td style="text-align: left;">②（封装一次性投入 + 复用时近乎零边际）</td>
-            </tr>            <tr>
+            </tr>
+            <tr>
+            <td style="text-align: left;"><strong>课程对应</strong></td>
+            <td style="text-align: left;">06-03</td>
+            </tr>
+            <tr>
             <td style="text-align: left;"><strong>目录归属</strong></td>
             <td style="text-align: left;">全集 33 模式之一 · 反思模块 4 模式之一</td>
             </tr>
@@ -71,11 +76,11 @@
             <hr />
             <h2>它解决什么问题</h2>
             <p>同一类任务 agent 干过 5 次、每次都干成，但每次都从零开始——读同样几份 reference、试错几轮、走完一遍跟上次一模一样的路径。第 6 次同类任务来，agent 又重走一遍。Token 烧、时间长、用户烦，根因是 agent 干完之后没有任何东西被沉淀下来。</p>
-            <p>Skill Package 把"做对的事"凝固成一份结构化资产，通常是 YAML frontmatter（name + description + triggers）加 markdown body（steps + gotchas + examples）加 bundled scripts。下次同类任务来，agent 路由到对应 skill，几秒进入主路，不再重新摸索。它和 Generator-Critic 的区别在层级——后者改的是单次输出，Skill Package 沉淀的是跨任务的能力。ACT-R 认知架构给这件事一个学术名字叫 proceduralization，即把陈述性知识编译成程序性技能；Anthropic 把它做成了 SKILL.md 标准。</p>
-            <h2>为什么坐标是「反思 × 层级」</h2>
+            <p>Skill Package 把"做对的事"凝固成一份结构化资产，通常是 YAML frontmatter（name + description + triggers）加 markdown body（steps + gotchas + examples）加 bundled scripts。下次同类任务来，agent 路由到对应 skill，几秒进入主路，不再重新摸索。它和 Generator-Critic 的区别在颗粒度——后者改的是单次输出，Skill Package 沉淀的是跨任务的能力。ACT-R 认知架构给这件事一个学术名字叫 proceduralization，即把陈述性知识编译成程序性技能；Anthropic 把它做成了 SKILL.md 标准。</p>
+            <h2>为什么坐标是「反思 × 路由」</h2>
             <ul>
-            <li><strong>纵轴 · 反思</strong>：Skill Package 是反思后的固化，不是单次反思。agent 反复成功做某类任务后，把成功路径提炼封装，这是"想完会沉淀"的形态，比 Generator-Critic 的"想完就改"高一个层级。</li>
-            <li><strong>横轴 · 层级</strong>：skills 之间有层级结构——原子 skill（atomic，单步操作）组合成复合 skill（composite，完整流程）。Anthropic 的三阶段 loading（Discovery 只看名字 → Activation 加载完整 SKILL.md → Execution 按需加载脚本）本身就是一个层级化的加载结构。</li>
+            <li><strong>纵轴 · 反思</strong>：Skill Package 是反思后的固化，不是单次反思。agent 反复成功做某类任务后，把成功路径提炼封装，这是"想完会沉淀"的形态，比 Generator-Critic 的"想完就改"高一层。</li>
+            <li><strong>横轴 · 路由</strong>：技能包真正的运行时动作是匹配与选择——新任务进来，系统按 triggers 把它路由到合适的 skill，命中就几秒进入主路，未命中就走通用流程。决定价值的是"挑对那一个"，这是一次基于任务特征的路由判断。技能内部的原子—复合分层、Anthropic 的三阶段 loading（Discovery 只看名字 → Activation 加载完整 SKILL.md → Execution 按需加载脚本）是它的存储与加载结构，但拓扑坐标取的是它在主循环里命中技能的那一下选择。</li>
             </ul>
             <h2>核心机制</h2>
             <p>一个 Skill Package 系统由两条流水线构成：</p>

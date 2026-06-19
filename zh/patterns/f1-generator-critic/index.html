@@ -53,12 +53,17 @@
             <tbody>
             <tr>
             <td style="text-align: left;"><strong>双轴坐标</strong></td>
-            <td style="text-align: left;">反思 Reflection × 循环 Loop（转）</td>
+            <td style="text-align: left;">反思 Reflection × 链式 Chain（传）</td>
             </tr>
             <tr>
             <td style="text-align: left;"><strong>成本档</strong></td>
             <td style="text-align: left;">②（2-4× 单次调用）</td>
-            </tr>            <tr>
+            </tr>
+            <tr>
+            <td style="text-align: left;"><strong>课程对应</strong></td>
+            <td style="text-align: left;">06-02</td>
+            </tr>
+            <tr>
             <td style="text-align: left;"><strong>目录归属</strong></td>
             <td style="text-align: left;">全集 33 模式之一 · 反思模块 4 模式之一</td>
             </tr>
@@ -72,10 +77,10 @@
             <h2>它解决什么问题</h2>
             <p>主观判断密集的任务没有标准答案，只有质量谱系——写作、设计、代码风格、产品文案、学术摘要都属于这一类。便宜模型第一次往往写不到位，但人类作家写完文章会回头读三遍，每读一遍改一遍，到边际收益降下来就停笔。这个"自己回看、自己改进"的能力是输出质量的关键，单次生成拿不到。</p>
             <p>Generator-Critic 把这个流程编码进 agent：generator 写初稿，critic 回看挑问题，generator 拿着反馈再改，循环到 critic 满意或触及迭代上限。它是反思模块里最简的工程实现，2023 年 Reflexion 论文奠定，到 2026 年仍是反思模式的工业基线——Self-Refine 在 7 个任务上平均拿到约 20% 的绝对提升，且不需要训练数据。</p>
-            <h2>为什么坐标是「反思 × 循环」</h2>
+            <h2>为什么坐标是「反思 × 链式」</h2>
             <ul>
             <li><strong>纵轴 · 反思</strong>：critic 是 agent 对自己输出的审视，让 agent 自己批评自己，这是最经典的反思形态。它不引入新 agent，也不检索外部知识，整个回看动作发生在同一个推理过程内部。</li>
-            <li><strong>横轴 · 循环</strong>：结构是 generate → critique → revise 的反复迭代，终止条件是 max_rounds 触底或 critic 判定通过。单次走完一遍也是合法实现，但循环是它默认的工作姿态，迭代上限是把"何时停笔"显式编码进系统。</li>
+            <li><strong>横轴 · 链式</strong>：它的骨架是 generate → critique → revise 的三步线性管道，每步一个角色、一段独立 prompt，前一步的产出喂给后一步。这条 chain 可以重放、必要时多走几轮，但迭代不是它的强制结构——强制循环是自愈循环（F4）的领域。F1 与 F4 的本质边界正在这里：F1 起点是"输出可用、想再好一点"的链式精修，F4 起点是"输出已坏、必须修好"的强制循环。</li>
             </ul>
             <h2>核心机制</h2>
             <p>一个 Generator-Critic 闭环由三段组成：</p>

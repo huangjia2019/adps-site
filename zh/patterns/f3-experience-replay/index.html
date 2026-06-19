@@ -53,12 +53,17 @@
             <tbody>
             <tr>
             <td style="text-align: left;"><strong>双轴坐标</strong></td>
-            <td style="text-align: left;">反思 Reflection × 循环 Loop（转）</td>
+            <td style="text-align: left;">反思 Reflection × 层级 Hierarchy（分）</td>
             </tr>
             <tr>
             <td style="text-align: left;"><strong>成本档</strong></td>
             <td style="text-align: left;">③（存储 + 检索 + 注入的持续投入，回报随时间累积）</td>
-            </tr>            <tr>
+            </tr>
+            <tr>
+            <td style="text-align: left;"><strong>课程对应</strong></td>
+            <td style="text-align: left;">06-04</td>
+            </tr>
+            <tr>
             <td style="text-align: left;"><strong>目录归属</strong></td>
             <td style="text-align: left;">全集 33 模式之一 · 反思模块 4 模式之一</td>
             </tr>
@@ -72,10 +77,10 @@
             <h2>它解决什么问题</h2>
             <p>一家公司运营几年，员工换了几代，工程师做过的所有事都散落在 Slack 消息、Jira ticket、内部 wiki、邮件存档里。这些是企业的"沉默资产"——80% 没人翻，但每一条都可能在新任务接手时省下半天工夫。资深员工离职带走的不只是技能，还有"踩过的坑、试过的失败路径、当年怎么发现某个关键变量的过程"——这些没法用一份 skill 包概括，但有用得很。</p>
             <p>Experience Replay 在 agent 系统里解的是同一个问题——让历史 trajectory 不要变成沉默资产。它在新任务来时主动检索相似的历史轨迹（成功的、失败的、零散的），把可复用部分注入当前 context。它和 Skill Package 的区别在颗粒度：Skill Package 装的是 verified 可调用单位，Experience Replay 装的是更宽泛的参考资产——经验有用但不一定 verified。CER（Contextual Experience Replay）在 WebArena 上把 GPT-4o baseline 的成功率提升了 51%，且完全 training-free。</p>
-            <h2>为什么坐标是「反思 × 循环」</h2>
+            <h2>为什么坐标是「反思 × 层级」</h2>
             <ul>
             <li><strong>纵轴 · 反思</strong>：学过的东西不能白学，喂回给后续任务，这是基于历史回看的反思。它不改当下输出（那是 Generator-Critic），也不固化成可调用单位（那是 Skill Package），而是把过去的完整经验当作参考资产供 agent 借鉴。</li>
-            <li><strong>横轴 · 循环</strong>：结构是训练时（或执行时）存、推理时取的跨调用 outer loop。经验在一次任务里产生并存档，在另一次任务里被检索回来注入——这条"存—取"回路跨越多次调用，是强化学习里 experience replay 机制在 LLM agent 时代的 inference-time 变体。</li>
+            <li><strong>横轴 · 层级</strong>：历史 trajectory 形成一层"上层经验库"，包裹住当前这次决策——上层经验为下层的当下行动提供参照与约束。经验本身也是分层存放的：原始 trajectory、抽取出的 lesson、可复用 artifact、可转技能候选，由粗到细。多层结构、上层 parametrize 下层，正是层级拓扑的本质，区别于 Skill Package 那一下"路由到哪个技能"的选择。</li>
             </ul>
             <h2>核心机制</h2>
             <p>一个 Experience Replay 闭环由六段组成：Task → Retrieve → Adapt → Execute → Distill → Store。两个核心设计判断决定它能不能工业化：</p>
