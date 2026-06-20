@@ -24,8 +24,8 @@
         .wp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .matrix-table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.8rem; min-width: 46rem; }
         .matrix-table th, .matrix-table td { border: 1px solid var(--color-rule); padding: 0.4rem 0.5rem; text-align: center; }
-        .matrix-table th { background: var(--color-link); color: #fff; font-weight: 600; }
-        .matrix-table td.fn { background: var(--color-link); color: #fff; font-weight: 600; text-align: left; white-space: nowrap; }
+        .matrix-table th { background: #1a1a1a; color: #fff; font-weight: 600; }
+        .matrix-table td.fn { background: #1a1a1a; color: #fff; font-weight: 600; text-align: left; white-space: nowrap; }
         .matrix-table td.filled { background: var(--color-badge-bg); color: var(--color-text); }
         .matrix-table td.empty { color: var(--color-text-faint); }
         .ext-badge { font-size: 0.72em; color: var(--color-badge); border: 1px solid currentColor; border-radius: 3px; padding: 0 4px; vertical-align: middle; }
@@ -108,9 +108,7 @@
             <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">认知功能 × 执行拓扑 · 28 核心 + 5 扩展模式 · 每个模式一页企业级说明。</p>
 
             <div class="callout">
-                <p><strong>这是一份免费公开的技术参考。</strong>它给团队一套对齐用的词汇、一个选型框架和一组工程边界，面向企业里的每一个角色——产品、架构、研发、安全合规、管理——都能读懂某个模式是什么、什么时候该用、哪里容易出错。</p>
-                <p style="color: var(--color-text-muted); font-size: 0.92rem;">它不替代《Agent 设计模式之美》付费专栏的深度讲解。源码拆解、八框架横切、可运行代码和工程现场复盘在专栏里，两者的分工见文末「它和付费专栏的区别」。</p>
-            </div>
+                <p><strong>这是一份免费公开的技术参考。</strong>它给团队一套对齐用的词汇、一个选型框架和一组工程边界，面向企业里的每一个角色——产品、架构、研发、安全合规、管理——都能读懂某个模式是什么、什么时候该用、哪里容易出错。</p>            </div>
 
             <p>
                 白皮书讲模式是什么，蓝皮书讲模式在真实企业里怎么落地。每个模式页下面都挂着对应的企业落地切片，跨模式的完整案例收在 <a href="/zh/cases/">案例库</a> 里。第一个落地锚点是梁博 · 东方屹腾的执行型 Agent。
@@ -328,15 +326,15 @@
                 每个具体模式向下还可以挂自己的资产清单：该模式的白皮书页、专栏对应讲、Manning 对应小节、GitHub 双框架实现（LangGraph + LangChain），以及引用它的企业落地案例。这一层会随蓝皮书案例的积累持续补全。
             </p>
 
-            <h2>它和付费专栏的区别</h2>
+            <h2>关于《Agent 设计模式之美》专栏</h2>
             <p>
-                白皮书和《Agent 设计模式之美》专栏写的是同一套框架，但服务两类需要，体例完全不同。
+                白皮书和<a href="https://time.geekbang.org/column/intro/101162601" target="_blank" rel="noopener">《Agent 设计模式之美》</a>专栏写的是同一套框架，但服务两类需要，体例完全不同。
             </p>
             <p>
-                白皮书是<strong>免费的、收敛的、跨角色的技术参考</strong>。每个模式压成一页，回答四件事——它解决什么问题、什么时候该用、哪里容易出错、上线后看哪些指标。读者是整个团队，目标是让产品、架构、研发、合规在十分钟内对齐"我们要做的是哪个坐标的 Agent"。
+                白皮书是<strong>收敛的、跨角色的技术参考</strong>。每个模式压成一页，回答四件事——它解决什么问题、什么时候该用、哪里容易出错、上线后看哪些指标。读者是整个团队，目标是让产品、架构、研发、合规在十分钟内对齐"我们要做的是哪个坐标的 Agent"。
             </p>
             <p>
-                专栏是<strong>付费的、展开的、面向工程师的深度教程</strong>。同一个模式，专栏会拆开主流框架的源码、横切八个框架的实现差异、给出可运行代码、复盘真实工程现场踩过的坑。白皮书告诉你"用不用、怎么不踩坑"，专栏告诉你"怎么动手把它做出来、做对"。两者互为指针。
+                专栏是<strong>展开的、面向工程师的深度教程</strong>。同一个模式，专栏会拆开主流框架的源码、横切八个框架的实现差异、给出可运行代码、复盘真实工程现场踩过的坑。白皮书告诉你"用不用、怎么不踩坑"，专栏告诉你"怎么动手把它做出来、做对"。两者互为指针。
             </p>
 
             <h2>延伸阅读</h2>
