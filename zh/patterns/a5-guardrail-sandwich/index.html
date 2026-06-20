@@ -93,31 +93,21 @@
 
             <h1>A5 · Guardrail Sandwich · 护栏三明治</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">行动 Action × 层级 Hierarchy（分）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">☷（跨切关注点，开销随风险分级浮动）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">横切（跨切关注点，开销随风险分级浮动）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">05-05</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">行动模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 行动模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">在 agent 每个有副作用或高风险的动作前后套上 pre-check 和 post-check 夹层，把它从"自由行动"约束到"被监督的行动"。</td>
             </tr>
             </tbody>
@@ -141,18 +131,18 @@
             <ul>
             <li><strong>按 risk_level 分级</strong>：读操作可以裸跑，不该套夹层；普通写挂 2 到 3 层；destructive 全套；金融、医疗这类 CRITICAL 动作全套加 Approval Gate。hook 配置文件本身就是 agent 的风险地图。</li>
             <li><strong>hook 顺序按"便宜先、贵的后"</strong>：RBAC 检查（一次 dict 查询）排前面快速失败，AML 扫描（要查反洗钱库）排后面，省算力。</li>
-            <li><strong>三阶段部署</strong>：周 1-2 monitor mode（只 log 不 block，收集误报样本）、周 3-4 soft enforcement（拦明显违规、flag 边缘 case）、月 2 起 full enforcement。直接上 full enforcement 会让 agent 卡死、业务方立刻翻脸——guardrail 调参和机器学习调参一样，必须在线收集数据再调。</li>
+            <li><strong>三阶段部署</strong>：周 1-2 monitor mode（只 log 不 block，收集误报样本）、周 3-4 soft enforcement（拦明显违规、flag 边缘 case）、月 2 起 full enforcement。直接上 full enforcement 会让 agent 卡死、严重影响业务方使用——guardrail 调参和机器学习调参一样，必须在线收集数据再调。</li>
             </ul>
             <h2>适合的生产场景</h2>
             <ul>
-            <li><strong>有副作用且错调代价高的动作</strong>：转账、删数据、发消息、调外部 API。读操作（read file、search、fetch 只读）不必套——每一刀都是真金白银的延迟。</li>
+            <li><strong>有副作用且错调代价高的动作</strong>：转账、删数据、发消息、调外部 API。读操作（read file、search、fetch 只读）不必套——每加一层都是额外的延迟开销。</li>
             <li><strong>强合规的垂直领域</strong>：金融、医疗、法律、政府。这类场景的硬约束（金额阈值、处方剂量、制裁名单）可以 1:1 编码进 pre-check。</li>
             <li><strong>与 Approval Gate 配合的混合把守</strong>：低风险动作走 sandwich 自动放行，高风险动作 sandwich 加人工审批双重把守。</li>
             </ul>
             <h2>容易出错的地方</h2>
             <ul>
             <li><strong>Composition Bypass（组合绕过）</strong>：单个动作每个都被允许（读文件、base64 编码、写 URL），串起来就是数据外泄。单点检查全过，因为它不分析序列。研究显示一个被攻陷的 agent 4 小时内能污染 87% 的下游决策，大半因此。应对是除了单点 hook，还要加 session 级的 scope analyzer，分析过去几分钟动作组合是否构成已知攻击模式——这是 LLM 时代的 SIEM。</li>
-            <li><strong>Sandwich Overhead Tax（夹层税）</strong>：所有工具一律套全套夹层，整体延迟涨 5 到 10 倍，业务方翻脸。读文件套 RBAC 加 AML 加审计是巨大浪费。应对是严格按 risk_level 分级，LOW 直接放行。</li>
+            <li><strong>Sandwich Overhead Tax（夹层税）</strong>：所有工具一律套全套夹层，整体延迟涨 5 到 10 倍。读文件套 RBAC 加 AML 加审计是巨大浪费。应对是严格按 risk_level 分级，LOW 直接放行。</li>
             <li><strong>Schema Drift（schema 漂移）</strong>：pre-check 校验的 schema 和下游工具实际期望的不一致，导致 pre 通过、tool 跑挂。应对是用 OpenAPI / JSON Schema 做 single source of truth，两边从同一份 schema 生成校验逻辑。</li>
             </ul>
             <p>三种失败共同的根因是：Guardrail Sandwich 不是 plug-and-play，是工程治理——装上 hook 不等于做对治理，必须持续维护 hook 顺序、风险地图、schema 同源，就像数据库索引加了能跑快、不维护就成累赘。</p>
@@ -163,7 +153,7 @@
             <li><strong>夹层延迟开销</strong>（健康区与 risk_level 匹配）：金融全套 6 hook 约增加 800ms，是合理代价；读操作若也涨这么多就是夹层税。</li>
             <li><strong>审计留档完整率</strong>（健康区 100%）：trace_id 串联全程，金融场景留档 7 年。审计是 sandwich 的副产品，不是额外功夫。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>wrap(tool, ctx):
     for hook in pre_hooks:            # 顺序: 便宜先，贵的后
         verdict = hook(ctx)
@@ -177,8 +167,8 @@
     返回 ok + result + 完整 trace（每个 hook 的 passed/reason/延迟）
 </code></pre>
             <p>工程落地要点：所有 destructive 工具都用它包一层；hook 要 idempotent（重试安全，网络抖动不能让钱转两次）；trace_id 落库做审计串联键。</p>
-            <h2>企业落地一例</h2>
-            <p>银行对公转账 agent 给所有 destructive 工具套上 sandwich，落地为六个决策点。pre 层：RBAC 权限校验、金额阈值三档分诊（10 万以下自动 / 10 到 100 万短信确认 / 100 万以上人审）、收款账号白名单匹配、制裁名单事前扫描。post 层：反洗钱事后扫描（高度可疑自动 saga 回滚、中度可疑 flag 给风控）、审计日志 7 年留档。hook 顺序极其关键——金额分诊在白名单之前，但都必须在制裁扫描之前，因为制裁是法律红线。装上之后误转账率从 0.3% 降到 0.001%，每笔交易延迟从 2 秒涨到 4 到 5 秒，金融场景这点延迟换准确率绝对值得。回到开场，<code>account_whitelist</code> 这一刀会先抓住"...XX32 不在客户白名单内"并要求短信二次确认——一个 hook 配置一次，挡掉一类事故。同一套结构换到医疗就是角色权限、处方剂量阈值、病史白名单、FDA 黑名单、药物相互作用扫描、HIPAA 审计——业务约束变了，模式不变。</p>
+            <h2>企业落地示例</h2>
+            <p>银行对公转账 agent 给所有 destructive 工具套上 sandwich，落地为六个决策点。pre 层：RBAC 权限校验、金额阈值三档分诊（10 万以下自动 / 10 到 100 万短信确认 / 100 万以上人审）、收款账号白名单匹配、制裁名单事前扫描。post 层：反洗钱事后扫描（高度可疑自动 saga 回滚、中度可疑 flag 给风控）、审计日志 7 年留档。hook 顺序极其关键——金额分诊在白名单之前，但都必须在制裁扫描之前，因为制裁是法律红线。装上之后误转账率从 0.3% 降到 0.001%，每笔交易延迟从 2 秒涨到 4 到 5 秒。回到开场，<code>account_whitelist</code> 这一层会先抓住"...XX32 不在客户白名单内"并要求短信二次确认——一个 hook 配置一次，挡掉一类事故。同一套结构换到医疗就是角色权限、处方剂量阈值、病史白名单、FDA 黑名单、药物相互作用扫描、HIPAA 审计——业务约束变了，模式不变。</p>
             <h2>与其他模式的关系</h2>
             <ul>
             <li><strong>工具调度（A1）</strong>：嵌套互补。A1 的 quota、state refresh 是 dispatch 内置的轻量守卫，A5 是套在 dispatch 前后的通用夹层——A1 选对工具，A5 保证选错时也兜得住。</li>
@@ -186,11 +176,11 @@
             <li><strong>Approval Gate（治理模块）</strong>：同源但分工不同。Approval Gate 是 human-in-loop（等人按批准），A5 是 deterministic check（机器直接做规则匹配）。两者常配合——低风险走 sandwich，高风险 sandwich 加 Approval Gate。</li>
             <li><strong>失败日记（感知模块）</strong>：组合绕过、记忆中毒这类失败 sandwich 单层挡不住，要配合记忆模块的 audit 一起防。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>Guardrail Sandwich 把人类几千年的程序正义智慧编码进了 agent 行动层——pre-check 是事前听证、execution 是判决执行、post-check 是事后救济。agent 工程的成熟标志不是 demo 跑得多酷，而是事故发生时它没出事。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

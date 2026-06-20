@@ -93,31 +93,21 @@
 
             <h1>F4 · Self-Heal Loop · 自愈循环</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">反思 Reflection × 循环 Loop（转）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（每次修复多几轮调用，但省下人工排查时间）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（每次修复多几轮调用，但省下人工排查时间）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">06-05</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">反思模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 反思模块 4 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">agent 在 deterministic 失败信号触发时自动诊断、修复、验证、循环到收敛或熔断。</td>
             </tr>
             </tbody>
@@ -133,7 +123,7 @@
             </ul>
             <h2>核心机制</h2>
             <p>一个 production-grade Self-Heal Loop 由六段流水线加三重停止机制构成。流水线：Test Fail → Diagnose → Generate Fix → Critic → Atomic Apply → Verify，验证失败时 git revert 回到 Diagnose 重做。</p>
-            <p>三重停止机制是把 Generator-Critic 升级成 Self-Heal 的关键，缺一就有"把 main branch 玩崩"的风险：</p>
+            <p>三重停止机制是把 Generator-Critic 升级成 Self-Heal 的关键，缺一就有"把 main branch 改坏"的风险：</p>
             <ol>
             <li><strong>max_iterations 硬熔断</strong>：loop 最多几轮（Aider 用 3）。防止 agent 无限打地鼠。</li>
             <li><strong>dual-model critic verifier</strong>：用一个不同 model family 的 reviewer 审修复方案。同 family 的 LLM 有共同盲区，cross-family review 引入独立训练历史的视角打破 self-bias。GitHub Copilot Rubber Duck 在 3 个风险节点（plan 后、实现后、写测试但运行前）强制 cross-model 验证。</li>
@@ -151,8 +141,8 @@
             <li><strong>没有 deterministic 失败信号还硬用</strong>：写作、设计这种主观判断没有客观对错信号，走 Generator-Critic（F1）而非 Self-Heal。修复代价大于失败代价的任务（生产数据库改 schema）走治理模块的 Approval Gate 加人审。</li>
             <li><strong>打地鼠</strong>：没有 stability check，agent 修一个错引入新错，几轮后代码一团糟。防法是 failure signature 比对加 regression detection 加 max_iterations 三层一起上。</li>
             <li><strong>回归级联</strong>：每轮 fix 不是 atomic commit，一连串 cascade 后 rollback 还原不到正确状态。防法是 per-iteration atomic commit 加 "modify only files in diagnosis" 严格约束。</li>
-            <li><strong>虚假恢复</strong>：agent 改的是 test 而不是 code，把测试改弱让它过——指标全绿、问题全在。这是 LLM 最阴险的 shortcut。防法是 critic 显式审"改的是 production code 还是 test"加 test coverage 不许下降。</li>
-            <li><strong>触底不转人工</strong>："修不好就崩溃"是不可接受的工程姿态。HITL handoff 必须是一等公民，触底转人审，且队列要有人每天清。</li>
+            <li><strong>虚假恢复</strong>：agent 改的是 test 而不是 code，把测试改弱让它过——指标全绿、问题全在。防法是 critic 显式审"改的是 production code 还是 test"加 test coverage 不许下降。</li>
+            <li><strong>触底不转人工</strong>："修不好就崩溃"是不可接受的工程做法。HITL handoff 必须是一等公民，触底转人审，且队列要有人每天清。</li>
             </ul>
             <h2>关键指标</h2>
             <ul>
@@ -161,7 +151,7 @@
             <li><strong>regression 率</strong>（健康区 &lt;10%）：修复引入新失败的比例。高说明 stability check 或 atomic commit 缺失。</li>
             <li><strong>HITL 队列清空时延</strong>（健康区 当天清零）：触底转人工后多久有人处理。队列堆积说明组织侧 ops 路径没打通。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>for i in range(MAX_ITERATIONS):           # MAX=3, Aider 同源
     diagnosis = diagnose(current_failure)
     fix = generate_fix(diagnosis)         # 只改 diagnosis 里的文件
@@ -179,7 +169,7 @@
 return &quot;max_iterations_human_handoff&quot;     # 触底转人审
 </code></pre>
             <p>四个工程要点：dual-model critic 用 cross-family 不用同 family 不同 size；regression detection 规则按业务定（可加性能、安全、覆盖率回归）；atomic commit 必须真 atomic，一次别改 5 个文件否则 rollback 不回去；触底必须真有人看 HITL 队列。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>一家 DevTool 公司做 CI/CD 自动修复 Agent。第一版很激进——任何失败都自动修，最多 10 次 iteration，没有 critic、没有 rollback、没有 stability check。第二周 incident：测试失败 → agent 改代码 → 又失败但是不同错误 → 又改 → 改 9 次后把无关代码都改了一遍，main branch 一团糟，rollback 还原不到正确状态因为 9 次 commit 不是 atomic 的。复盘出三个根因：没有 stability check（在打地鼠）、没有 critic 验证（agent 自己说修了就 apply）、没有 git audit trail。第三版彻底重写，加三重停止机制——max iterations 硬熔断、dual-model critic（Sonnet 写、GPT-5.4 审，cross-family）、stability check via signature 比对。验证走 format/lint/build/test 四级 cascade，每轮 atomic commit 便于精确 rollback，触底转 HITL 人审 PR。修完 main branch incident 清零，自愈成功率 70%（剩 30% 转人工），代价是单次修复延迟从约 30 秒涨到约 90 秒——金融场景这点延迟换准确率值得。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -188,11 +178,11 @@ return &quot;max_iterations_human_handoff&quot;     # 触底转人审
             <li><strong>Iterative Hypothesis（推理模块）</strong>：Loop 同源思路，都是"试—验—再试"的迭代结构。</li>
             <li><strong>Guardrail Sandwich（行动模块）</strong>：sandbox 同源。Honk 把 agent 放隔离 container 加限权运行，把 blast radius 从"production 全开"压到"sandbox 内全开"。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>Self-Heal Loop 不是简单的自动修代码，而是定义 agent 自主性的边界——能 self-heal 的领域（有 deterministic ground truth）agent 可以独立干，不能的领域（blast radius 不可逆）必须人介入，这条线跟 DevOps 几十年"什么能自动化、什么必须人审"的判断完全同源。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

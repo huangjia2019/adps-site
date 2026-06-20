@@ -93,31 +93,21 @@
 
             <h1>M4 · Failure Journals · 失败日记</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">记忆 Memory × 循环 Loop（转）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（中等，结构化存储 + 召回检索）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（结构化存储 + 召回检索）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">03-05</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">记忆模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 记忆模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">Agent 把每次失败结构化记录（哪一步失败、什么错、根因、怎么补救），跨任务持久化，下次类似情况主动召回。</td>
             </tr>
             </tbody>
@@ -139,7 +129,7 @@
             <li><strong>记录 Recording</strong>：结构化存档，schema 必须比自由文本强。一条失败记录至少含任务指纹、类别、一句话总结、根因、补救动作、可执行的 lessons。</li>
             <li><strong>召回 Recall</strong>：新任务来时按相似度主动调出相关历史失败，注入 prompt。这是失败日记跟普通 try-catch 的根本差别——后者只当场处理，前者跨任务记忆。召回靠在 inference 时把过去经验注入 context（training-free 路径），无需重训模型。</li>
             </ol>
-            <p>配套还有两条工业铁律：失败 trajectory 默认丢弃是巨大浪费（研究显示约 85% 失败 trajectory 被丢弃），可经反向标注后用于训练；分层留存（如 48 小时存全细节、30 天存压缩摘要、更久只存聚合指标）让召回在工程上可行而不让数据库无限膨胀。</p>
+            <p>配套还有两点工程实践：失败 trajectory 默认丢弃是巨大浪费（研究显示约 85% 失败 trajectory 被丢弃），可经反向标注后用于训练；分层留存（如 48 小时存全细节、30 天存压缩摘要、更久只存聚合指标）让召回在工程上可行而不让数据库无限膨胀。</p>
             <h2>适合的生产场景</h2>
             <ul>
             <li><strong>生产级长期运行的 agent</strong>：跑数月、反复处理同类任务的 agent。哪些失败要记、哪些任务来时要翻出来，是它的核心价值所在。</li>
@@ -148,7 +138,7 @@
             </ul>
             <h2>容易出错的地方</h2>
             <ul>
-            <li><strong>任务一次性、没有重复执行场景却硬上</strong>：纯 demo、prototype、一次性脚本，失败被丢弃没问题。失败日记的价值在重复任务，没有重复就没有召回收益，加了是过度工程。</li>
+            <li><strong>任务一次性、没有重复执行场景却硬上</strong>：纯 demo、prototype、一次性脚本，失败被丢弃没问题。失败日记的价值在重复任务，没有重复就没有召回收益。</li>
             <li><strong>只 free-text 不分类</strong>：第一版 failure log 常是"task / error / timestamp"三字段自由文本，agent 看到完全没法学。必须强制 schema 化（enum 加受限字段），让失败可聚类、可统计、可查询。</li>
             <li><strong>自由写导致噪声仓库</strong>：让 agent 自由写 failure journal，它会过度悲观每次小不顺都记一笔，半年后 journal 变噪声仓库、召回率断崖。要两层审查：结构化 schema 强制（自由文本 ≤ 200 字符），加 access_count 触发清理（长期没被召回的归档到冷层）。</li>
             <li><strong>记下来了但召回不匹配</strong>：用 Jaccard 这类粗糙相似度，漏检率太高，记了等于没召回。task signature 之间要用 embedding cosine similarity。</li>
@@ -161,7 +151,7 @@
             <li><strong>首次尝试成功率</strong>（健康区随时间上升）：agent 一次做对的比例，失败 lessons 沉淀后应逐月上升。</li>
             <li><strong>高风险失败计数</strong>（健康区接近 0 且强监控）：跨租户错位等生死线失败的发生次数，必须独立监控加告警。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>FailureEntry: failure_id / task_signature / category(enum) / summary
               / root_cause / remediation / lessons[] / access_count
 FailureJournal:
@@ -172,7 +162,7 @@ FailureJournal:
 分层留存：48h 全细节 / 30d 压缩摘要 / 90d+ 聚合指标
 </code></pre>
             <p>工程落地四个要点：相似度函数用 embedding cosine 而非 Jaccard；召回挂在任务启动和高风险工具调用前（可用 PreToolUse hook）；分层留存真做并分别上不同后端；写入做两层审查（schema 强制加 access_count 清理）。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>某 B2B SaaS 给两百多家企业租户提供客服 agent，每天处理约五万条工单。失败分布大致是工具错误三成、跨租户错位两成五、上下文溢出两成、语义漂移一成五。重写后六个关键决策：跨租户错位（boundary_leak）定为最高优先级——比工具错误严重一百倍（前者是数据泄露事件），永不淘汰、每次任务启动强制召回、连续三条触发 PagerDuty；task signature 用"租户加意图"双因子，ACME 的失败不会让 BETA 收到无关提醒；按 CER 范式把 top-5 相关历史失败作为 system prompt 注入，让 implicit belief update 在动手前发生；失败强制分类不许 free-text；失败档案每周导出 markdown commit 到 git 供团队 review（git diff 是最好的失败趋势可视化）；UNKNOWN 类失败进 needs_review 状态由人审过才进档案，避免噪声污染召回。落地第二个月，boundary_leak 从每天八起降到一起，tool_error 重复率降四成，首次尝试准确率从 78% 升到 85%。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -181,11 +171,11 @@ FailureJournal:
             <li><strong>分层保留（M1）</strong>：失败日记是长期记忆层里的专门分区，分层留存（48h / 30d / 90d+）正是分层思想在失败档案上的应用。</li>
             <li><strong>Self-Heal Loop（行动模块）</strong>：自愈循环只在当前任务内处理失败，不跨任务持久化。失败日记比它多走一步——把当次的失败信号持久化，下次类似任务召回。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>抹掉失败就等于抹掉证据，模型没法学——失败日记不是错误日志，是 agent 的职业档案，一个跑了半年带失败档案的弱模型 agent，在你具体业务上可能强过一个刚启动的更聪明模型。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

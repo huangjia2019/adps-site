@@ -93,31 +93,21 @@
 
             <h1>R4 · Iterative Hypothesis Testing · 迭代假设验证</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">推理 Reasoning × 循环 Loop（转）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">③（多轮迭代累计成本，需用熔断和预算上限约束）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">高（多轮迭代累计成本，需用熔断和预算上限约束）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">04-05</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">推理模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 推理模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">Agent 形成假设、用证据验证、根据结果修正，循环到证据收敛或达到迭代上限，把科学方法搬进推理。</td>
             </tr>
             </tbody>
@@ -138,7 +128,7 @@
             <li><strong>证据收集（Generator）</strong>：给定一个假设，跑哪些工具能验证它——查 metric、检索 log、读 sensor。这主要是工具调用，用便宜模型够用。证据必须是 deterministic、可复现的数据源，"模型自己看了觉得 OK"不算证据。</li>
             <li><strong>判定（Evaluator）</strong>：综合证据判断假设是被确认、被证伪、还是证据不足。这一步用中档模型，system prompt 要强调证伪而非确认——"你的工作是找出 strong counter-evidence"，这个 framing 能显著提升准确率。</li>
             </ol>
-            <p>循环规则是：证伪就回到生成阶段、确认就退出、证据不足就回去取更多证据。两条容易被忽视但关键的工程姿态：一是遇到全新证据时要 reset 整个假设树而不是在旧树上微调；二是跑到上限还没收敛时触发人在回路（HITL），而不是让 Agent 强行选一个先验最高的硬撞。承认不确定性是科学方法的基本品格，Agent 也该有。</p>
+            <p>循环规则是：证伪就回到生成阶段、确认就退出、证据不足就回去取更多证据。两条容易被忽视但关键的工程做法：一是遇到全新证据时要 reset 整个假设树而不是在旧树上微调；二是跑到上限还没收敛时触发人在回路（HITL），而不是让 Agent 强行选一个先验最高的硬撞。</p>
             <h2>适合的生产场景</h2>
             <ul>
             <li><strong>诊断类任务</strong>：工业故障定位、医疗诊断、安全事故根因分析。根因不明、需要逐步收集证据、单链走偏后能 reset 重启。</li>
@@ -160,7 +150,7 @@
             <li><strong>证伪率 Falsification Rate</strong>（健康区 30-60%）：每轮被证伪的假设占比。低于 20% 说明 Agent 在确认偏误、不主动证伪；高于 80% 说明生成的假设大多是错的。</li>
             <li><strong>人工介入率 HITL Trigger Rate</strong>（健康区 5-15%）：触发人工的比例。低于 2% 说明 Agent 过于自信、不该 commit 也硬 commit；高于 30% 说明 Agent 太弱、什么都要人兜底。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>任务进来 → Planner 生成假设清单（按先验概率排序）
 循环（上限 max_iterations）：
     选先验最高的待验假设
@@ -173,8 +163,8 @@
 循环结束仍未收敛 → 触发 HITL，附完整假设树 + 证据 + 已跑迭代
 全程 trace 留档（合规场景需长期保留）
 </code></pre>
-            <p>落地四个要点：三个模型按路由姿态分配（贵模型生成假设、便宜模型收证据、中档判定）；证据 schema 严格化，杜绝模型脑补证据；HITL 升级要带完整假设树和证据，不是简单通知；trace 长期留档备审。</p>
-            <h2>企业落地一例</h2>
+            <p>落地四个要点：三个模型按路由方式分配（贵模型生成假设、便宜模型收证据、中档判定）；证据 schema 严格化，杜绝模型脑补证据；HITL 升级要带完整假设树和证据，不是简单通知；trace 长期留档备审。</p>
+            <h2>企业落地示例</h2>
             <p>某中型化工厂的工业故障诊断 Agent，给一线工程师在报警时辅助定位根因。试点第三周凌晨一条聚乙烯生产线报警——反应釜温度异常上升。Agent 推送 5 个候选假设按可能性排序，工程师逐个验证：冷却泵故障（看流量正常，淘汰）、传感器漂移（对比冗余传感器一致，淘汰）、工艺配方异常（查进料 log 正常，淘汰）。到第四个假设要等实验室分析、生产线已停一小时时，工程师手动喂了一个新事实——PID 控制日志里凌晨有一次远程登录修改。Agent 立即完全重建假设树，下钻发现某个控温参数被改、会导致温度震荡上行、与现状吻合，最终定位是另一班组做参数优化测试忘了回滚。</p>
             <p>事后两个观察很关键：第一，那个真正的根因在第一轮先验里只有 2% 概率，模型先验严重错估，靠反复迭代加人工补事实才挖出来；第二，喂新事实后 Agent 是 reset 重建整棵树而非微调。团队据此重写，加了三层结构（生成假设、收证据、判定），并做了六个关键决策：三层假设树支持下钻、HITL 阈值低（3 轮后置信度不足就升人工、涉及重启关键设备必须人工 confirm）、新证据 reset 而非 compaction、证据 schema 严格化、Evaluator 强调证伪、每次 trace 长期留档。改完后收敛率从 50% 升到 82%，平均故障定位时间从 3.2 小时压到 1.1 小时。</p>
             <h2>与其他模式的关系</h2>
@@ -184,11 +174,11 @@
             <li><strong>复杂度路由（R2）</strong>：迭代里三个角色用不同档位模型，正是路由思路在循环内部的应用。</li>
             <li><strong>双模架构（R5）</strong>：同在循环列。迭代是单 Agent 自我循环验证，双模是双 Agent 协同分工。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>迭代假设验证的退出条件不是"找到一个对的假设"，而是"证伪掉所有错的假设"——它把人类几百年的科学方法编码进了概率系统，因为概率系统的可靠性只能靠证伪来建立。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

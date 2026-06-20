@@ -93,31 +93,21 @@
 
             <h1>C1 · Hierarchical Delegation · 层级委派</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">协作 Collaboration × 层级 Hierarchy（分）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">③（3-15× 单 agent 调用）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">高（3-15× 单 agent 调用）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">07-02</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">协作模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 协作模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">一个 supervisor agent 动态拆分任务、派给 N 个 worker agent 执行、再把结果合并，是经典的多 agent 主管-工人协作。</td>
             </tr>
             </tbody>
@@ -183,7 +173,7 @@
             <li><strong>artifact 合规率</strong>（健康区 &gt; 95%）：worker 返回符合 schema 的比例。worker 偶尔输出自由文本绕过 schema 会触发重派和延迟。</li>
             <li><strong>token 倍数</strong>（健康区 &lt; 5×）：多 agent 比单 agent 多花的 token 倍数。15× 是高价值任务的可接受上限，普通业务 5× 已经偏高，不匹配就退回单 agent。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>SupervisorAgent.execute(task):
     plan = decompose(task)              # 动态拆分,跟输入相关
     artifacts = 并行 gather(            # 并发上限设 5
@@ -199,8 +189,8 @@ IsolatedSubAgent.execute(subtask):
     return reduce_to_artifact(raw)      # 强制压缩成 verdict/findings/confidence
 </code></pre>
             <p>四个工程要点：每个 worker 独立 context 起跑；worker 强制 reduce 成 schema artifact；每个 worker 用 timeout 加异常包裹隔离失败；用信号量控制并发上限，worker 之间不共享 state。</p>
-            <h2>企业落地一例</h2>
-            <p>某律所的合同审阅 Agent，第一版主 agent 派 sub-agent 扫描 50 份合同找异常条款，sub-agent 跑完把每份 3000 字的详细分析全部回传，主 agent 接到 15 万字后 context 完全爆炸，后续推理质量断崖式下降。工程团队复盘后想清楚一件事：主 agent 不该看 sub-agent 的 raw 工作过程，只该看结论——就像律所的 PM 不会要求每个律师汇报每份合同读了哪一行，只看"50 份里有 3 份异常加它们的关键问题清单"。第二版给每份合同分配一个独立 worker，每个 worker 跑在隔离 context 里，返回前必须 reduce 成固定 schema 的 artifact（contract_id、risk_level、top_3_concerns、recommendation，外加 contract_hash 防篡改）。50 份合同的 artifact 加起来不到 1 万字，主 agent 看着轻松。配套的工程纪律还包括：HIGH 以上风险合同强制进律师 review 队列，不允许 agent 自动放行；每个 worker timeout 收紧到 180 秒，失败时返回 failure artifact 而不是炸掉全局；portfolio report 落文件作为审计留痕。改完之后 50 份合同 1 小时跑完，15 万字爆炸的故事不再发生。</p>
+            <h2>企业落地示例</h2>
+            <p>某律所的合同审阅 Agent，第一版主 agent 派 sub-agent 扫描 50 份合同找异常条款，sub-agent 跑完把每份 3000 字的详细分析全部回传，主 agent 接到 15 万字后 context 完全爆炸，后续推理质量断崖式下降。工程团队复盘后想清楚一件事：主 agent 不该看 sub-agent 的 raw 工作过程，只该看结论——就像律所的 PM 不会要求每个律师汇报每份合同读了哪一行，只看"50 份里有 3 份异常加它们的关键问题清单"。第二版给每份合同分配一个独立 worker，每个 worker 跑在隔离 context 里，返回前必须 reduce 成固定 schema 的 artifact（contract_id、risk_level、top_3_concerns、recommendation，外加 contract_hash 防篡改）。50 份合同的 artifact 加起来不到 1 万字，主 agent 看着轻松。配套的工程纪律还包括：HIGH 以上风险合同强制进律师 review 队列，不允许 agent 自动放行；每个 worker timeout 收紧到 180 秒，失败时返回 failure artifact 而不是炸掉全局；portfolio report 落文件作为审计留痕。改完之后 50 份合同 1 小时跑完。</p>
             <h2>与其他模式的关系</h2>
             <ul>
             <li><strong>子代理隔离（C5）</strong>：实现核心。层级委派是招式（supervisor 派 worker），子代理隔离是内功（worker 隔离 context 加 schema artifact 加失败 boundary）。没有隔离的层级委派必定 context 爆炸加 cascade failure，两者必须配套。</li>
@@ -208,11 +198,11 @@ IsolatedSubAgent.execute(subtask):
             <li><strong>交接链（C4）</strong>：层级委派有 supervisor 作为稳定锚点，交接链没有主管、每一棒都是 peer。</li>
             <li><strong>Plan-and-Execute（行动模块）</strong>：层级委派是它在多 agent 层的扩展，把"一个 agent 内 plan-execute 分家"扩展成"多个 agent 分家"。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>层级委派的本质不是把任务拆开派出去，而是<strong>把人类金字塔组织 50 年沉淀的信息分层纪律编码进 agent 系统</strong>——supervisor 只看下一层的精炼结论，是这套纪律的工程载体。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

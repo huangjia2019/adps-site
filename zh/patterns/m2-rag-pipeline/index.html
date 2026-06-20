@@ -93,31 +93,21 @@
 
             <h1>M2 · RAG Pipeline · 检索增强生成</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">记忆 Memory × 链式 Chain（传）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（中等，索引 + 检索 + 可选重排）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（索引 + 检索 + 可选重排）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">03-03</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">记忆模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 记忆模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">给 agent 配一个外挂图书馆，让它在每次需要超出 context 容量的知识时，能查、能筛、能迭代地查回来用。</td>
             </tr>
             </tbody>
@@ -134,10 +124,10 @@
             <h2>核心机制</h2>
             <ol>
             <li><strong>两条 pipeline 在向量库汇合</strong>：RAG 不是单一步骤。离线侧把文档 chunk、embed、建索引；在线侧把 query embed、召回 top-K、重排、注入生成。两条独立 pipeline 共享同一个向量库。</li>
-            <li><strong>混合检索</strong>：embedding 擅长语义（"ACME 财报"约等于"ACME 业绩"），但精确关键词（产品名、错误码、特定 ID）经常 miss。把语义检索和 BM25 关键词检索结合，再用 RRF（Reciprocal Rank Fusion）融合，是经典的"语义加关键词"姿态。</li>
-            <li><strong>上下文增强 chunking</strong>：chunk 一旦切开，原文上下文锚点就丢了。在每个 chunk 前 prepend 一段上下文摘要（用便宜模型生成）再 embed，能显著降低检索失败率。这是性价比最高的工程精雕，预处理一次终身受用。</li>
-            <li><strong>agent 主导的多步检索</strong>：把 RAG 从一次性流水线升级为 agent 主导流程——拆子 query、迭代改写、找反例、跨语料三角验证、按证据强度加权合成。这五步合起来是人类研究员方法论的工程化版本。</li>
-            <li><strong>迭代硬上限</strong>：多步检索必须设硬上限，否则 agent 会一直觉得"还不够"连续检索把账单烧爆。</li>
+            <li><strong>混合检索</strong>：embedding 擅长语义（"ACME 财报"约等于"ACME 业绩"），但精确关键词（产品名、错误码、特定 ID）经常 miss。把语义检索和 BM25 关键词检索结合，再用 RRF（Reciprocal Rank Fusion）融合。</li>
+            <li><strong>上下文增强 chunking</strong>：chunk 一旦切开，原文上下文锚点就丢了。在每个 chunk 前 prepend 一段上下文摘要（用便宜模型生成）再 embed，能显著降低检索失败率。</li>
+            <li><strong>agent 主导的多步检索</strong>：把 RAG 从一次性流水线升级为 agent 主导流程——拆子 query、迭代改写、找反例、跨语料三角验证、按证据强度加权合成。这是人类研究员方法论的工程化版本。</li>
+            <li><strong>迭代硬上限</strong>：多步检索必须设硬上限，否则 agent 会一直觉得"还不够"连续检索。</li>
             </ol>
             <h2>适合的生产场景</h2>
             <ul>
@@ -151,7 +141,7 @@
             <li><strong>该走 Agentic Search 却硬上 RAG</strong>：dev workflow、代码搜索、内部敏感数据这三类场景多数不该上 RAG。代码每分钟在变，刚写的函数还没建索引就找不到（数据延迟）；索引本身是 attack surface，内部恶意人员可能越权偷看（安全隐患）。这类场景应该走 grep 加 glob 的 Agentic Search。</li>
             <li><strong>停留在一查一答</strong>：第一次没查到关键信息时，naive RAG 要么直接说不知道，要么 silently 编造。生产级 RAG 必须能改写 query 再查。</li>
             <li><strong>盲目追求召回精度</strong>：embedding 模型选型差几个点是边际优化，agent 多步检索像不像一个真会查的人才是质变。chunk 召回率上 80% 不一定有用，最终综合质量像 senior 研究员才是真价值。</li>
-            <li><strong>引用不可追溯</strong>：学术、法律、医疗场景里，每个结论都要能追到原始 chunk 加页码，这是合规底线，不可省。</li>
+            <li><strong>引用不可追溯</strong>：学术、法律、医疗场景里，每个结论都要能追到原始 chunk 加页码，这是合规的必要条件。</li>
             </ul>
             <h2>关键指标</h2>
             <ul>
@@ -160,7 +150,7 @@
             <li><strong>多步检索轮数</strong>（健康区 3-5 轮且有硬上限）：迭代检索的实际轮数。持续顶到上限说明任务确实难或单次召回太差。</li>
             <li><strong>最终综合质量</strong>（业务判定）：agent 输出像不像一个 senior 从业者的产出。这是 RAG 系统真正的判断标准，上 70% 已能改变团队工作方式。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>离线索引侧：
     doc → chunk → 前置上下文摘要(便宜模型) → embed → 向量库 + BM25 索引
 
@@ -175,8 +165,8 @@
 返回 answer + evidence + counter_evidence + 完整 trace（含 citation 可追溯）
 </code></pre>
             <p>工程落地四个要点：retriever 层做上下文增强加混合检索加重排；max_iterations 设硬上限加 token 预算硬上限；trace 完整记录每次检索；引用必须可追溯到原始文档加页码。</p>
-            <h2>企业落地一例</h2>
-            <p>某科研机构的学术文献综述 agent，要在百万级论文库里帮研究员回答任意问题。第一版用关键词检索返回五千篇已读过的，换 embedding 又只返回 2018-2020 的"经典"，研究员要的"过去三年进展"反而沉底。重写后五个 canonical 模式全上：拆子 query、迭代精化、假设取反找反例、跨 arXiv 加 bioRxiv 加 PubMed 三角验证、按证据强度加权合成。配套六个业务决策——多语料分库不分表（peer-reviewed 权重 1.5、预印本 1.0、未发表 0.5）、时间衰减权重（半衰期 18 个月让新论文自然浮上来）、强制开启反例检索、引用做到 chunk 级、跨语料作者关系图。落地后 agent 返回精准二十篇加五篇反例加三篇隐含相关，每篇都有 citation 可追，研究员一份综述从六小时压到一个半小时，质量还更高。</p>
+            <h2>企业落地示例</h2>
+            <p>某科研机构的学术文献综述 agent，要在百万级论文库里帮研究员回答任意问题。第一版用关键词检索返回五千篇已读过的，换 embedding 又只返回 2018-2020 的“经典”。重写后五个 canonical 模式全上：拆子 query、迭代精化、假设取反找反例、跨 arXiv 加 bioRxiv 加 PubMed 三角验证、按证据强度加权合成。配套六个业务决策——多语料分库不分表（peer-reviewed 权重 1.5、预印本 1.0、未发表 0.5）、时间衰减权重（半衰期 18 个月）、强制开启反例检索、引用做到 chunk 级、跨语料作者关系图。落地后 agent 返回精准二十篇加五篇反例加三篇隐含相关，每篇都有 citation 可追，研究员一份综述从六小时压到一个半小时，质量还更高。</p>
             <h2>与其他模式的关系</h2>
             <ul>
             <li><strong>分层保留（M1）</strong>：M1 解决"长期已知的记忆怎么按作用域加载",RAG 解决"作用域装不下的海量知识怎么现查现用"。分层管已知，RAG 管外挂。</li>
@@ -184,11 +174,11 @@
             <li><strong>上下文分诊（感知模块）</strong>：RAG 把候选信息拉进来，分诊决定这些候选谁先入场。RAG 是召回，分诊是入场排序。</li>
             <li><strong>渐进发现（感知模块）</strong>：两者结构相似但目标不同。渐进发现是 agent 在陌生空间探索结构，RAG 是在已知大库里取相关片段。一个偏认知，一个偏检索。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>RAG 不是越精准越好，是越会查越好——它的工程天花板不在模型、embedding 或向量库，而在知识源本身的整理质量。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

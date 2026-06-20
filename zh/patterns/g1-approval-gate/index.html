@@ -93,31 +93,21 @@
 
             <h1>G1 · Approval Gate · 审批门</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">治理 Governance × 路由 Route（选）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">☷（跨切关注点，不在主推理路径上计费，横切在所有高风险动作上）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">横切（跨切关注点，不在主推理路径上计费，横切在所有高风险动作上）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">08-02</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">治理模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 治理模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">高 blast radius 或不可逆的动作执行前，按风险路由到自动放行 / 留痕 / 人审三档之一，让人在关键决策点保留最后否决权。</td>
             </tr>
             </tbody>
@@ -181,7 +171,7 @@
             <li><strong>override path 实际触发率</strong>（健康区接近 0 且不上升）：trust-based 绕过路径的触发频率。一旦发现异常上升立刻停，这是 200 万事故的早期征兆。</li>
             <li><strong>audit log 完整率</strong>（健康区 100%）：高风险动作留痕的覆盖率。低于 100% 意味着出事时查不清谁批的、凭什么批，直接违反 EU AI Act Article 22 留档要求。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>对每个 action：
     risk = classify(action)          # reversibility × impact 双轴
     Stage 1 Deny  → 命中黑名单(查 args 不只查 name) → 拒绝
@@ -194,8 +184,8 @@
 全程写 WORM audit log（满足监管留档）
 </code></pre>
             <p>工程落地三处必改：risk classifier 换成业务的（金融用 KYC + AML 评分、运维用 blast radius 估算）；人审接口对接真实审批工作流（飞书 / Slack / ServiceNow）而非 console input；双人复核强制 reviewer1 ≠ reviewer2。</p>
-            <h2>企业落地一例</h2>
-            <p>某美国 mid-market 银行的 vendor payment Agent，第一版规则是"1 万美金以下自动付、以上需审批"，前两个月跑得很顺。出事那次，一个老 vendor 通过伪造的 change notice 改了收款账号，Agent 读 notice、走 reconciliation、在季度账到期时自动付了 20 万美金，钱进了攻击者账户。根因不是 Agent 没标风险——它标了 high-amount——而是工程团队为了减少审批人不耐烦，加了一条"累计成功超 50 次的老 vendor 阈值放宽到 5 万美金"的 trust-score override，把这笔本该走审批的大额付款自动放行了。事故后银行加了一条铁律：no trust-score override on amount triggers，再老的 vendor 金额一过门槛审批人必须按回车。这套修正还包括 30 天内改过账号加大额组合强制双人复核、audit log 七年留档备查。问题的根因不是审批门不够用，是有人为了 UX 把审批门绕过了。</p>
+            <h2>企业落地示例</h2>
+            <p>某美国 mid-market 银行的 vendor payment Agent，第一版规则是"1 万美金以下自动付、以上需审批"，前两个月跑得很顺。出事那次，一个老 vendor 通过伪造的 change notice 改了收款账号，Agent 读 notice、走 reconciliation、在季度账到期时自动付了 20 万美金，钱进了攻击者账户。根因不是 Agent 没标风险——它标了 high-amount——而是工程团队为了减少审批人不耐烦，加了一条"累计成功超 50 次的老 vendor 阈值放宽到 5 万美金"的 trust-score override，把这笔本该走审批的大额付款自动放行了。事故后银行定下一条硬规则：no trust-score override on amount triggers，再老的 vendor 金额一过门槛审批人必须按回车。这套修正还包括 30 天内改过账号加大额组合强制双人复核、audit log 七年留档备查。问题的根因不是审批门不够用，是有人为了 UX 把审批门绕过了。</p>
             <p>在执行型 Agent 的工程实现里，这套门可以做得更轻。当 Agent 有了任务节点和任务状态机之后，敏感任务能在节点处被阻塞、等人工审核通过再继续执行，需要审核的关键操作基于配置声明即可挂上 human-in-the-loop，不必每次都改代码。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -204,11 +194,11 @@
             <li><strong>可观测性（G5）</strong>：依赖。审批门必须留 audit log，G5 让这些 log 可被查询、可被回放、可被监管审计。没有 G5，审批记录就是没人看的死数据。</li>
             <li><strong>钩子流水线（G4）</strong>：审批门是 PreToolUse hook 的一种特殊形态——在动作执行前插入的一道 deterministic 拦截。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>Approval Gate 的本质不是 UX 工作流，而是责任承担工程——它把"Agent 出事谁背锅"这个模糊问题，转化成"有人审过的归审批人、自动决定的归 owner"这条明确的责任划分契约。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

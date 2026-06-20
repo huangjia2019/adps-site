@@ -93,31 +93,21 @@
 
             <h1>M3 · Progress Tracking · 进度追踪</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">记忆 Memory × 编排 Orchestrate（协）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">①（低，状态字段读写开销小）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">低（状态字段读写开销小）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">03-04</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">记忆模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 记忆模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">Agent 在长任务中显式维护一份结构化的 todo list，每一轮把状态外部化，让 agent 自己和用户都能看见做到哪了。</td>
             </tr>
             </tbody>
@@ -129,7 +119,7 @@
             <h2>为什么坐标是「记忆 × 编排」</h2>
             <ul>
             <li><strong>纵轴 · 记忆</strong>：它给 agent 一份"工作日志",跨 step 保留任务上下文，是记忆最简形式（session memory）——记着"我刚做了什么、现在在做什么、接下来做什么"。</li>
-            <li><strong>横轴 · 编排</strong>：进度追踪不落在某一个任务步骤里，而是横切在所有步骤之上——它维护一份贯穿整个长任务的 todo 状态，协调 agent 在多步之间不跑偏、断了能续、跳了能回。这种"站在所有步骤之上做协调"正是编排的姿态，而不是某一步把结果传给下一步的链式。</li>
+            <li><strong>横轴 · 编排</strong>：进度追踪不落在某一个任务步骤里，而是横切在所有步骤之上——它维护一份贯穿整个长任务的 todo 状态，协调 agent 在多步之间不跑偏、断了能续、跳了能回。这种"站在所有步骤之上做协调"正是编排的做法，而不是某一步把结果传给下一步的链式。</li>
             </ul>
             <h2>核心机制</h2>
             <ol>
@@ -147,7 +137,7 @@
             </ul>
             <h2>容易出错的地方</h2>
             <ul>
-            <li><strong>单次简单任务强行用</strong>：三步以内的活、纯对话、单次 Q&amp;A 不需要 todo，强行用是过度工程。</li>
+            <li><strong>单次简单任务强行用</strong>：三步以内的活、纯对话、单次 Q&amp;A 不需要 todo。</li>
             <li><strong>允许多个 in_progress</strong>：违反状态机硬约束。工程师抱怨"想并行做"通常是伪需求——要么任务该拆给多个 agent，要么该排成 chain 顺序做。</li>
             <li><strong>缺 active form 字段</strong>：UI 显示"正在做什么"时机械地给动词加 -ing，出现"Fix cache bug...ing"这种拼接。用进行时形式字段从写 todo 时就想清楚动词形态。</li>
             <li><strong>main agent 与 sub-agent 共享一个池</strong>：main agent 看自己清单时被子 agent 的五到十条细节 todos 淹没，注意力被无关粒度争夺。子 agent 必须独立 todos。</li>
@@ -160,7 +150,7 @@
             <li><strong>resume 成功率</strong>（健康区 ≥ 95%）：崩溃后从进度恢复且不重做已完成步骤的比例。</li>
             <li><strong>单 in_progress 合规率</strong>（健康区 100%）：任意时刻只有一个 in_progress 的占比，违反即状态机有 bug。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>TodoItem: content（动词原形）/ active_form（进行时）/ status（pending|in_progress|completed）
 TodoList（按 owner_id 隔离）：
     start(id)    → 标 in_progress，自动把其他 in_progress 暂停回 pending（一次只一个）
@@ -173,7 +163,7 @@ ProgressTracker（框架层强制）：
 持久化：增量 append-only + 周期 snapshot + session 兜底
 </code></pre>
             <p>工程落地四个要点：一次只一个 in_progress 必须强制；复杂度估算用便宜模型而非数动词；nudge 递进式压力三档边界清楚；TodoList 按 agent_id 隔离不共享。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>某买方研究机构的投资研究 agent，要跟研究员跨四到十二周持续推进对一只股票的判断。普通单层 todo 不够，这里需要"会话统一状态平面"。SessionState 是机械参数态——严格键值结构，记着每只股票的研究计划、当前投资逻辑、关键风险、反向观点，保证连续多步分析时每一步的入参都有唯一可审计来源（比如"用的是哪天的财报数据"）。SessionNarrative 是叙事对齐态——自然语言摘要，记着"我们整体在做什么、这次具体推进了哪个维度",解决产出写回哪里供后续会话消费的问题。配套设计包括:双层 todo（研究计划跨周保持加会话任务做完合并）、状态存为 git 友好的 markdown（研究员能 git diff 看每周变化）、关键风险和反向观点永不清空（每次会话作为 system prompt 注入）、四状态机（多一个 needs_review 等基金经理审过才算 completed，满足监管"所有判断有人审"要求）、active form 带数据时间戳（逼 agent 检查"我用的数据够新吗"）、周末自动周报合并。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -182,11 +172,11 @@ ProgressTracker（框架层强制）：
             <li><strong>Plan-and-Execute（推理模块）</strong>：进度追踪是 Plan 的运行时孪生。规划一次性产出"想做什么"的静态清单，进度追踪循环维护"做到哪了"的动态状态。两件事，不要混。</li>
             <li><strong>Hooks Pipeline（治理模块）</strong>：框架层的 nudge 和持久化挂点天然契合 hook 机制，可用 PreToolUse / PostToolUse hook 实现。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>进度追踪不是给用户的进度可视化，是给 agent 的外置工作记忆——它是 agent 时代工作记忆缺陷的工程化补丁，没有它，越聪明的 agent 在长任务里越危险。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

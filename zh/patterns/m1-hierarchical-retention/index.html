@@ -93,31 +93,21 @@
 
             <h1>M1 · Hierarchical Retention · 分层保留</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">记忆 Memory × 层级 Hierarchy（分）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（中等，多层存储与加载开销）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（多层存储与加载开销）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">03-02</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">记忆模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 记忆模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">把 agent 的记忆按作用域切成多层，每层独立存储、独立生命周期、独立加载策略，新会话从粗到细加载。</td>
             </tr>
             </tbody>
@@ -149,7 +139,7 @@
             <li><strong>层数照抄不照需</strong>：上来就抄 CoALA 三层（working / episodic / semantic），但产品其实只需要两层，结果代码里多出一堆没东西可放的空架子。层数应该跟产品的作用域种类数一致。</li>
             <li><strong>用户层不做 schema</strong>：让 agent 自由文本写"小李会装饰器"，半年后同一概念十种写法，retrieval 命中率断崖。高频字段必须 typed schema 化。</li>
             <li><strong>全部按启动注入设计</strong>：用户层和项目层是启动注入，会话层是渐进读取，临时层是实时拼装。三种 access pattern 混成一种，会话层积累几十轮后 token 会爆炸。</li>
-            <li><strong>完全无状态的场景强行分层</strong>：单次问答、一次性 ETL 转换不需要跨会话记忆，搞四层是过度工程。</li>
+            <li><strong>完全无状态的场景强行分层</strong>：单次问答、一次性 ETL 转换不需要跨会话记忆。</li>
             <li><strong>eviction 不留 reason log</strong>：合规（GDPR right-to-be-forgotten）和 debug 都要求能证明"删了什么、为什么删、什么时候删"，没有日志就证明不了。</li>
             </ul>
             <h2>关键指标</h2>
@@ -159,7 +149,7 @@
             <li><strong>跨层污染率</strong>（健康区接近 0）：是否出现用户层被单次会话的偶然信息污染、租户之间串数据。多租户场景这是生死线指标。</li>
             <li><strong>启动 token 总量</strong>（对照基线衡量）：相比"全 history dump"省了多少。分层做对通常能省 70-80% 启动 token。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>定义层级（作用域从粗到细）：
     USER    → 永久 / 高频读 / 强 schema / 关系库
     PROJECT → 永久 / 团队共享 / 文件系统 + git
@@ -172,7 +162,7 @@
 淘汰：过期内容清除并记 reason log（合规 + debug）
 </code></pre>
             <p>工程落地四个要点：每层的存储后端要真做不同选型；组装时按 token budget 截断而非全量塞入；写入做"写入路由"（小模型或规则决定写哪层）；eviction 必须留 reason log。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>某薪酬 SaaS 的执行型智能体把记忆做成三层。L1 是当前意识流——这一刻该看到的最小必要集，只放推进眼前这一步真正用得上的信息，保持极简。L2 是进行中的里程碑日志——记着任务做到哪、刚完成了什么，跨回合维持任务上下文。L3 是跨回合可复用经验——把这类任务上沉淀下来的判断和做法留作长期资产。三层各管一个时间尺度：L1 管"现在",L2 管"本任务",L3 管"跨任务"。这套分层让 agent 在长流程里既不会被无关历史淹没（L1 始终精简），又不会在回合之间失忆（L2 持续维护），还能随使用越来越熟练（L3 持续累积）。配套工程决策包括每层独立 token 预算、L1 实时拼装而非预加载、L3 写入前做信任校验避免单次偶然信息污染长期经验。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -181,11 +171,11 @@
             <li><strong>失败日记（M4）/ 程序性记忆（M5）</strong>：这两者是长期记忆层里的专门分区——M4 存失败案例，M5 存成功招式。分层是容器，它们是容器里的内容。</li>
             <li><strong>语义压缩（感知模块）</strong>：会话层 token 满了触发语义压缩瘦身，是分层在单层内部的配套机制。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>分层保留的本质不是数据库 schema 设计，而是给 agent 装一个 working set 管理器——它决定哪些记忆常驻 RAM、哪些按需 swap in、哪些长期 swap out。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

@@ -93,31 +93,21 @@
 
             <h1>C6 · Choreography · 编舞</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">协作 Collaboration × 编舞 Choreography（新兴拓扑，编排的去中心化孪生）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">③（多 agent、事件驱动，链路长、可观测开销高）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">高（多 agent、事件驱动，链路长、可观测开销高）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">加餐 08（编外扩展模式，不占核心 28 讲的格子）</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">协作模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 34 模式之一 · 协作模块第 6 模式 · 扩展环第 6 个</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">多个 agent 之间没有中央指挥，各自订阅事件、各自反应、各自再发出新事件，整体协作行为从局部规则里涌现出来。</td>
             </tr>
             </tbody>
@@ -126,7 +116,7 @@
             <h2>它解决什么问题</h2>
             <p>编排（Orchestration）模式有一个中央指挥，挨个命令每个 agent "你做这步、再做那步"。这套结构在大多数场景下是对的，但它有两个会顶到天花板的硬约束：中央指挥本身是单点，它挂了整条流程就停；每加一个新 agent，都要回去改中央指挥的逻辑。当 agent 的数量和种类不断增长、业务边界又分属不同团队时，这个中央点会从协调者变成瓶颈。</p>
             <p>编舞解决的就是这种规模下的耦合问题。它把中央指挥拿掉，让每个 agent 成为一个自治单元：它只订阅自己关心的事件，事件来了就反应，反应完把结果作为新事件发回到共享的事件流里，不向任何中心汇报。系统的整体行为不再写在某一处的流程图里，而是从所有 agent 的局部"订阅—反应—发布"规则中涌现出来。加一个新 agent，只要让它订阅该订阅的事件，其余 agent 一行都不用改。</p>
-            <p>这件事值得单独成一个模式，是因为它不是编排的一个参数变体，而是协作拓扑的另一极：控制权从集中变成了分散。它跟扇出聚合、层级委派这些有中心的协作模式，在工程性格上是反的。</p>
+            <p>这件事值得单独成一个模式，是因为它不是编排的一个参数变体，而是协作拓扑的另一极：控制权从集中变成了分散。它跟扇出聚合、层级委派这些有中心的协作模式，在结构取向上是相反的。</p>
             <h2>为什么坐标是「协作 × 编舞」</h2>
             <p>这是协作模块里第一个不落在核心 6 拓扑列上的模式，需要专门说清楚，就像行动模块的最简工具集（A4）落在"约束"而非具体拓扑列上一样。</p>
             <ul>
@@ -164,7 +154,7 @@
             <li><strong>耦合影响面</strong>（健康区 ≈ 0）：新增或下线一个 agent，需要改动的其他 agent 数量。这个数趋近于零，正是上编舞的核心收益，也是检验它有没有做对的最直接指标。</li>
             <li><strong>端到端延迟</strong>（健康区：与编排版可比）：去中心化不应该用大幅延迟换弹性，否则得重新评估值不值。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code># 编排（对照组）：中心持有完整计划，挨个命令
 orchestrator.run(task):
     for step in plan(task):
@@ -188,7 +178,7 @@ bus.publish(initial_event)                   # 点火，之后全靠涌现
 # 完成 = 某个 terminal 事件出现；回溯 = 按 correlation_id 串起整条因果链
 </code></pre>
             <p>四个工程要点对应四件要素：EventBus 是共享事件介质；subscribes_to 加 on_event 是自治的订阅—反应单元；没有任何一处持有 plan 是涌现；correlation_id 加 terminal 事件是显式终止与可观测。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>某内容风控平台，第一版用一个中央编排器把每条内容按固定步骤路由：先查垃圾、再查欺诈、再过策略、再决定是否升级人工。业务跑了一年，检测维度从 4 个涨到 20 多个，而且分属垃圾、欺诈、合规、品牌四个团队，每加一个检测器都要去改那个全公司共用的编排器，排期越拖越长，编排器也成了所有内容必经的单点。第二版改成编舞：搭一条内容事件总线，每个检测 agent 订阅 <code>content.received</code>，各自并行反应、各自发出 <code>flag.spam</code> / <code>flag.fraud</code> 这类事件；策略 agent 订阅各种 flag 事件做综合；升级 agent 订阅高危事件、发出 <code>case.opened</code>。新上一个深伪检测器，只要把它订阅到总线，其余 agent 一行不用改，四个团队各自迭代各自的 agent 互不阻塞。</p>
             <p>代价也很诚实：他们先补齐了可观测性，每个事件强制带 correlation ID、可按 case 全链路 replay，否则涌现行为根本没法查；并且在最后一段"案件是否彻底处置完"上，保留了一个薄薄的编排式 saga 来界定完成态，因为纯编舞回答不了"这个 case 结没结"。这正是生产里最常见的形态——<strong>编舞为主、关键收口处留一个薄编排的混合式</strong>，而不是非此即彼。当代主流框架里，AutoGen 在 0.4 版把运行时重构为事件驱动的 actor 模型，是这种编舞倾向最接近主流工程的一个实现；A2A 协议（已捐给 Linux Foundation）也在把多 agent 互操作往事件驱动方向带。</p>
             <h2>与其他模式的关系</h2>
@@ -199,11 +189,11 @@ bus.publish(initial_event)                   # 点火，之后全靠涌现
             <li><strong>失败日记（记忆模块 M4）</strong>：event sourcing 是编舞在记忆行的回声——把状态变化记成不可变事件流，本质同源。</li>
             <li><strong>爆炸半径控制（G2）/ 审批门（G1）</strong>：与编舞天然对冲。需要强治理约束的链路，要么保留薄中央 gate，要么不在那一段用编舞。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>编舞看上去是"把编排的指挥撤掉"，本质是<strong>把协作的控制权从一个中心，下放到每个 agent 的局部规则里</strong>——指挥棒换成了事件流，整支舞从没有总谱的各自起舞中跳出队形。它给你弹性和解耦，向你索取的是可观测性和对涌现行为的敬畏。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

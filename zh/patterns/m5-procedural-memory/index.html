@@ -93,31 +93,21 @@
 
             <h1>M5 · Procedural Memory · 程序性记忆</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">记忆 Memory × 层级 Hierarchy（分）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（中等，蒸馏 + 索引 + lifecycle 管理）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（蒸馏 + 索引 + lifecycle 管理）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">并入 06-03（技能包讲，是独立模式）</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">记忆模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 记忆模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">把一类任务的成功执行流程凝固成可命名、可加载、可复用的结构化资产，下次同类任务直接调用，跳过试错进入主路。</td>
             </tr>
             </tbody>
@@ -161,7 +151,7 @@
             <li><strong>token / 时间节省</strong>（对照 explore 基线）：复用 skill 相比从零做省下的 token 和时间。做对时单个高频任务可省一个数量级（如三万 token 加十分钟压到五千 token 加九十秒）。</li>
             <li><strong>自蒸馏转正率</strong>（业务判定）：自蒸馏招式通过试用期转为正式 skill 的比例，过低说明蒸馏触发条件或质量校验有问题。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>Skill = SKILL.md 的结构化形态：
     name / description（用于 discovery）/ body（workflow + best practices）
     triggers[] / preconditions[] / steps[] / failure_handling[]
@@ -174,7 +164,7 @@ SkillLibrary：
     evict_stale(...)              → 低成功率或长期不用的清除
 </code></pre>
             <p>工程落地四个要点：蒸馏的 LLM 调用用便宜模型加结构化 prompt 并做 schema 校验；蒸馏触发条件不止"5+ tool calls"（还要 success、工具间有非平凡逻辑、无用户多次纠错）；lifecycle 做 success_rate 跟踪；自蒸馏 skill 与人写 skill 分级信任。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>某中厂运维团队五到八个工程师管三十多个生产服务，DevOps agent 要接住反复遇到的标准运维事件——Redis 集群配置变更、Kubernetes 批量重启、PostgreSQL 备份恢复。六个关键决策:skill 分两类，团队精心写的 runbook 走 Anthropic Skills 路线（SRE leader review 才入库，放 runbooks/），agent 自蒸馏的放独立 namespace（auto-skills/，七天后进 review 队列）；触发条件 schema 化（frontmatter 的 triggers 字段列关键词或正则，让"该不该用这个 skill"可测试，规则匹配加 LLM 混合判断）；preconditions 强制前置检查（执行前先验"当前用户有 SSH 权限""目标 namespace 存在",这是生产事故最大防火墙）；steps 可回滚（每步标 idempotent 或带 rollback，类似分布式系统 Saga）；成功率监控加告警（任何 skill 跌破 80% 告警去查是不是底层服务变了）；自蒸馏招式试用期双轨执行（两份结果一致五次以上才转正）。落地第三个月，开篇"半年第三次手动改 maxmem-policy"的场景再来时，agent 走 discovery 加 activation 加自动 precondition 检查加自动 rollback 保护，三万 token 加十分钟的活儿压到五千 token 加九十秒，省下的运维时间相当于半个 SRE 全职。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -183,11 +173,11 @@ SkillLibrary：
             <li><strong>分层保留（M1）</strong>：同在层级列。M1 是货架（容器），M5 是货架上专门的招式区。技能库本身也分层（atomic 到 composite 到 workflow）。</li>
             <li><strong>RAG（M2）</strong>：互补的两种记忆。RAG 管 declarative（知道什么，事实检索），M5 管 procedural（会做什么，流程复用）。企业 agent 落地里两者是合奏。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>程序性记忆不是工作流模板，是 agent 的职业能力——它让 agent 在保留判断力的同时拿到老员工的手艺，agent 的价值跟它累积的经验等比，跟它今天有多聪明反而关系不大。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

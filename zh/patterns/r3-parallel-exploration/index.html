@@ -93,31 +93,21 @@
 
             <h1>R3 · Parallel Exploration · 并行探索</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">推理 Reasoning × 并行 Parallel（撒）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">③（5-10× 单次调用）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">高（5-10× 单次调用）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">04-04（课程 28 讲版独立成讲）</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">推理模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 推理模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">同一个查询内故意启动 N 条独立推理链，再用聚合策略合成单一答案，用算力换准确度。</td>
             </tr>
             </tbody>
@@ -125,7 +115,7 @@
             <hr />
             <h2>它解决什么问题</h2>
             <p>单条推理链有"侥幸偏差"：同一个提示、同一个模型，不同采样得到的答案不一定一致。一条链刚好走偏，整个结论就错了，而且每一步看上去都对——错误藏在"这一次恰好没抓到的那个特征"里，事后复盘很难发现。</p>
-            <p>并行探索把"赌一条链"换成"同时跑 N 条独立的链，再合并"。它不追求降低单次成本，而是在<strong>错误代价远大于算力代价</strong>的场景里，用 3-5 倍的算力把准确度抬上去。它和复杂度路由（R2）是一对互补姿态：路由负责日常省钱，并行负责关键决策买质量，两者在同一个 Agent 里并存。</p>
+            <p>并行探索把"赌一条链"换成"同时跑 N 条独立的链，再合并"。它不追求降低单次成本，而是在<strong>错误代价远大于算力代价</strong>的场景里，用 3-5 倍的算力把准确度抬上去。它和复杂度路由（R2）互补：路由负责日常省钱，并行负责关键决策买质量，两者在同一个 Agent 里并存。</p>
             <h2>为什么坐标是「推理 × 并行」</h2>
             <ul>
             <li><strong>纵轴 · 推理</strong>：并行的实体是<em>同一个推理任务的多条候选路径</em>（多个 candidate solution），属于推理策略层，而不是把任务拆给多个 Agent。这是它和协作模块"扇出聚合（C2）"的根本区别——后者并行的是子任务，前者并行的是同一道题的多个解法。</li>
@@ -190,7 +180,7 @@
             <li><strong>聚合成本占比</strong>（健康区 &lt;15%）：聚合这一步本身的算力占总成本的比例，过高就换更轻的聚合策略。</li>
             <li><strong>质量提升</strong>（健康区 5-15 个百分点）：并行相对单链的准确度增益。低于 3 个点说明并行没起作用；高于 25 个点说明单链配置本身有问题，先修单链。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>对 query 复制 N 条分支：
     每条分支 → 独立运行时 → 不同 temperature 采样 → (answer, confidence)
 聚合(N 个结果, 策略):
@@ -201,7 +191,7 @@
 返回 final_answer + 完整分支 trace（每路答案/置信度/聚合策略/最终决策）
 </code></pre>
             <p>工程落地四个要点：提示扰动要真正制造多样性；评委若用模型实现要用便宜模型；并发要复用连接池避免限流；Any-Alarm 与早终止互斥要在代码里写死。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>某三甲医院的医疗影像辅助 Agent，第一版单链推理读 CT 标记肺结节，准确率 89% 即上线试点。一例 12mm 结节被判低度疑似，三个月后确诊为肺腺癌早期——单链恰好没抓到边缘毛刺征。重写后改为 N=5 并行采样，5 路里 2 路抓到了毛刺和胸膜凹陷；团队把聚合策略从多数投票改成"任一路 ≥ 4a 立即触发二审"，准确率升到 96.2%，算力上升 4.1 倍。在医疗这种错误代价极不对称的场景，5 倍算力换 7 个百分点准确度，这笔账完全划算。配套的工程决策还包括：每路独立运行时（合规要求真独立采样）、Any-Alarm 场景不开早终止、N 路完整 trace 留档 7 年备监管审计。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -210,11 +200,11 @@
             <li><strong>扇出聚合（C2）</strong>：结构同源、聚合机制相通，区别在并行的实体——R3 是同一道题的多条解法（推理策略），C2 是不同子任务分给不同 Agent（协作拓扑）。</li>
             <li><strong>迭代假设验证（R4）</strong>：对偶关系。并行是空间维度同时开 N 条线，迭代是时间维度一条线跑多次。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>并行探索的本质不是"多采几次投票"，而是<strong>用聚合策略把业务对错误的容忍模式编码进系统</strong>——选哪种聚合，就是在选一个代价函数。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

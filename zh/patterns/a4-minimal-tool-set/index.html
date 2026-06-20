@@ -93,31 +93,21 @@
 
             <h1>A4 · Minimal Tool Set · 最简工具集</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">行动 Action × 约束 constraint（跨切，不属于任何单一拓扑）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">①（砍工具本身省 token，是净收益）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">低（砍工具本身省 token，是净收益）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">并入 05-02</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">行动模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 行动模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">把 agent 的工具集控制在合理上限（通常 10 到 30 个），砍掉低频、合并相似、把次要工具下沉到 sub-agent，给模型留下选择的专注力。</td>
             </tr>
             </tbody>
@@ -169,7 +159,7 @@
             <ul>
             <li><strong>把"全能"当目标</strong>：追求"一个 agent 干所有事"必然导致工具膨胀，是 67 工具事故的根源。应该按"用户想要什么结果"组织工具（outcome-oriented），而不是按"系统有什么能力"罗列。</li>
             <li><strong>合并时丢了语义边界</strong>：把语义差别大的工具硬合成一个，会让单个工具的 description 变模糊，selection 反而更难。合并的前提是功能真的高度重叠。</li>
-            <li><strong>只砍不配渐进披露</strong>：直接删掉低频工具会让罕见任务彻底没法做。正确姿态是下沉加 Tool Search，而不是一刀切删除。</li>
+            <li><strong>只砍不配渐进披露</strong>：直接删掉低频工具会让罕见任务彻底没法做。正确做法是下沉加 Tool Search，而不是一刀切删除。</li>
             <li><strong>砍完不复盘</strong>：工具集是活的，新功能会不断加回来。需要固定的 evict 周期，否则几个月后又长回 67 个。</li>
             </ul>
             <h2>关键指标</h2>
@@ -179,7 +169,7 @@
             <li><strong>默认装载 / 总工具比</strong>（健康区偏低，配合 on-demand）：Claude Code 是 10-12 / 40+。比例过高说明渐进披露没做。</li>
             <li><strong>工具选择准确率</strong>（健康区 &gt;90）：砍工具后的直接收益。客服案例砍完准确率升约 10 个点。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>prune(all_tools, stats, target_size=12):
     对每个 tool 打分 = 30天调用次数 × 成功率
     按分数降序，取前 target_size 个常驻
@@ -190,19 +180,19 @@ merge_similar(tools, threshold=0.5):
 # 其余工具不删除，转入 sub-agent + 挂到 Tool Search 入口
 </code></pre>
             <p>工程落地要点：core 工具 always-on，extended 工具 on-demand；按使用频次加成功率打分剪枝；保留 Tool Search 入口让罕见任务仍可达。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>翻译/本地化 agent 的六个决策点：核心 5 到 7 个工具撑全流程（translate / detect_lang / glossary_lookup / quality_check / format_preserve / cultural_adapt）；OCR、PDF 解析、图片翻译这些低频工具下沉到专门的 sub-agent；设 30 天 evict 周期；相似工具自动提示合并；保留 Tool Search 入口让用户问罕见任务时 agent 能找到；core always-on 加 extended on-demand 的渐进披露配置。六个决策做对后，agent token 成本降约 35%、准确率升约 10 个点。回到那个电商客服案例：团队把 67 个工具砍到 18 个，一周后客户满意度回到 79%，比 67 工具的初版还高 1 个点。</p>
             <h2>与其他模式的关系</h2>
             <ul>
-            <li><strong>工具调度（A1）</strong>：同格的一对，姿态相反。A1 解决"给定工具集怎么挑得准"，A4 解决"挑之前先把工具集砍到挑得动"。A4 是 A1 准确率的前置条件——工具污染少了，router 才不掉点。</li>
+            <li><strong>工具调度（A1）</strong>：同格的一对，分工相反。A1 解决"给定工具集怎么挑得准"，A4 解决"挑之前先把工具集砍到挑得动"。A4 是 A1 准确率的前置条件——工具污染少了，router 才不掉点。</li>
             <li><strong>分层保留（记忆模块）</strong>：渐进披露与记忆模块的分层加载同源，都是"核心常驻、其余按需取"的 attention 管理思路。</li>
             <li><strong>规划-执行（A2）</strong>：当工具逼近上限，拆 sub-agent 往往与 A2 的任务分解同时发生——把次要能力连同它的工具一起下沉。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>最简工具集不是在裁剪工具，而是在给 agent 留下专注力——LLM 的 attention 是稀缺资源，同时打开 50 个工具就像同时开 50 个浏览器标签页，谁都没法深度思考。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

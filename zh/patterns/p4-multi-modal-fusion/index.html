@@ -93,38 +93,28 @@
 
             <h1>P4 · Multi-Modal Fusion · 多模态融合</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">感知 Perception × 并行 Parallel（撒）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">③（多路 specialist 处理器 + vision 调用，开销显著）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">高（多路 specialist 处理器 + vision 调用，开销显著）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">02-05</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">感知模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 感知模块 4 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">Agent 接到的输入有图、有文、有表、有日志，把每一种转换成最适合 LLM 消化的形态，再合并喂给推理层。</td>
             </tr>
             </tbody>
             </table>
             <hr />
             <h2>它解决什么问题</h2>
-            <p>感知模块前三个模式处理的都是文本流，怎么挑、怎么压、怎么找。多模态融合换一种形态：PDF、图表、表格、扫描件、日志混在一起的异构信息。把一份 80 页研报整份喂给 vision 模型，y 轴刻度密、像素糊，市场规模 5800 亿被读成 5800 万，差了一千倍；全部 OCR 成纯文本又把图全丢了，研报里真正值钱的市场规模柱状图、竞争格局饼图坍缩成一句"图 3 显示市场份额"，Agent 读到等于没读到。</p>
+            <p>Agent 感知到的通常是 PDF、图表、表格、扫描件、日志混在一起的异构信息。把一份 80 页研报整份喂给 vision 模型，y 轴刻度密、像素糊，市场规模 5800 亿被读成 5800 万，差了一千倍；全部 OCR 成纯文本又把图全丢了，研报里真正值钱的市场规模柱状图、竞争格局饼图坍缩成一句"图 3 显示市场份额"，Agent 读到等于没读到。</p>
             <p>多模态融合把这件事工程化，关键在数据进入上下文之前：哪一段该走 vision、哪一段该转文本、哪一段应该被丢掉。它处理的是 Agent 还没"想"之前的输入形态问题——形态错了，下游怎么挑、怎么压、怎么探都是在错误的形态上继续消耗。</p>
             <h2>为什么坐标是「感知 × 并行」</h2>
             <ul>
@@ -132,7 +122,7 @@
             <li><strong>横轴 · 并行</strong>：每一路数据同时交给各自的 specialist 处理器（PDF parser、OCR、table extractor、日志 sub-agent）<strong>并行转换</strong>，各路互不依赖、可同时跑，再由一个 fuser 把多路结果<strong>聚合（gather）</strong>成统一的 prompt content。这是典型的扇出—聚合（fan-out / gather）：N 路并行处理 + 一次合并，不是单链顺序，也不是单点路由。</li>
             </ul>
             <h2>核心机制</h2>
-            <p>融合的核心判断是给每一路数据选对载体，再合并。判定标准就一条铁律：空间信息是信号才保留为图，结构信息是信号该转 markdown。</p>
+            <p>融合的核心判断是给每一路数据选对载体，再合并。判定标准是：空间信息是信号才保留为图，结构信息是信号该转 markdown。</p>
             <table>
             <thead>
             <tr>
@@ -164,7 +154,7 @@
             </tr>
             </tbody>
             </table>
-            <p>两个机制撑起工业级融合。第一，vision token 的真实数学。同一张 1024×1024 喂三家差 16 倍（GPT-4o detail=high 765、Gemini 1032、Claude Sonnet 1398、GPT-4o detail=low 仅 85）；prompt cache 是最值钱的一刀，cache reads 是 base rate 的 0.1×，重复读同一份 PDF 省 90%。第二，长日志三层流水线：bash 预过滤（grep/awk/jq 在 shell 把 500MB 缩到 5-10MB，只烧 CPU 不烧 token）→ sub-agent 处理（便宜模型读完返回 200-500 token 结构化摘要）→ 结构化产物回主 context（JSON 而非 free text，原始日志的指针留在摘要里需要时再查）。500MB 日志直灌 Sonnet 约 $150 还可能溢出窗口，走三层约 $0.16，差约 940 倍。</p>
+            <p>两个机制撑起工业级融合。第一，vision token 的真实数学。同一张 1024×1024 喂三家差 16 倍（GPT-4o detail=high 765、Gemini 1032、Claude Sonnet 1398、GPT-4o detail=low 仅 85）；prompt cache 省得最多，cache reads 是 base rate 的 0.1×，重复读同一份 PDF 省 90%。第二，长日志三层流水线：bash 预过滤（grep/awk/jq 在 shell 把 500MB 缩到 5-10MB，只烧 CPU 不烧 token）→ sub-agent 处理（便宜模型读完返回 200-500 token 结构化摘要）→ 结构化产物回主 context（JSON 而非 free text，原始日志的指针留在摘要里需要时再查）。500MB 日志直灌 Sonnet 约 $150 还可能溢出窗口，走三层约 $0.16，差约 940 倍。</p>
             <h2>适合的生产场景</h2>
             <ul>
             <li><strong>金融研报分析</strong>：PDF 表格 + 分析师文字 + 市场规模图表，每一路单独看都不完整，必须拼起来才能下判断。</li>
@@ -185,7 +175,7 @@
             <li><strong>agent loop 的 budget 触发情况</strong>（必须有 pre-execution cap）：四道天花板（USD/token/wall-clock/recursion-depth）的触发与拦截记录。卡不断或卡得太晚就是 $47K 风险。</li>
             <li><strong>chart 路径的二次提取率</strong>：走 vision 的 chart 中有多少做了 chart→CSV 提取再计算。直接拿 vision 输出的数字做推理是高风险信号。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>fuse(inputs):                       # inputs 是多路异构输入
     对每一路按形态分发：
         TEXT   → 直接进 content
@@ -198,7 +188,7 @@
 health_check：按形态盯 token 占比，异常形态早报警
 </code></pre>
             <p>specialist 工具（ocr / stt / pdf_extract / log_subagent / bash_filter）用注入而非封装，迁移环境时只换注入实现（如 OCR 从 Textract 换本地引擎），不动 fuser 主流程。多模态依赖（cv2、pyaudio、pdfplumber）要 lazy import 到函数体内并加 ImportError 兜底，避免在 headless 环境启动即 crash。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>一个券商研报分析 Agent 做了三版。V1 把 80 页 PDF 整份喂给 vision，单次约 90K token、$0.27，柱状图市场规模 5800 亿被读成 5800 万。V2 全部 OCR 成纯文本，token 降到 35K 便宜一半，但摘要句子通顺、销售要点全空——值钱信息恰恰长在图表里，转文本后空间信息全坍缩。V3 没再调 prompt，重新设计 pipeline：PDF 先抽目录、定位关键页、关键图保留原图走 vision、表格转 markdown、装饰图直接丢，最后塞给模型 18K token，比 V1 省 80%，数字核查也过了。一份 PDF 客户经理一天平均查 8 次，开 prompt cache 后单份日均成本从 $2.16 降到 $0.46。工程师的复盘是写了三周 prompt 都没用，最后救场的是重新想数据该长什么样。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -206,11 +196,11 @@ health_check：按形态盯 token 占比，异常形态早报警
             <li><strong>扇出聚合（C2，协作模块）</strong>：长日志三层流水线里把过滤后数据交给 sub-agent 处理，是扇出聚合在感知层的体现——多个 specialist 处理器并行处理后汇到中央 fuser。</li>
             <li><strong>分层记忆（Memory 模块）</strong>：sub-agent 死循环的对策 Memory Pointer Pattern 与记忆模块共享同一思路——完整产物存外部 store，context 里只传 pointer。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>多模态融合不是 prompt 工程，是数据形态工程——好的融合让 Agent 看到恰当的少，而不是完整的多。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

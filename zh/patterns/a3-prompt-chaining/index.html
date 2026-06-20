@@ -93,31 +93,21 @@
 
             <h1>A3 · Prompt Chaining · 提示链</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">行动 Action × 链式 Chain（传）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（拆成 N 段、N 次调用，但每段可用更便宜的模型摊薄）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（拆成 N 段、N 次调用，但每段可用更便宜的模型摊薄）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">05-04</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">行动模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 行动模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">把一个复杂任务拆成一串小任务，每一步用一段独立的 prompt 跑，前一步的输出作为下一步的输入，串起来完成。</td>
             </tr>
             </tbody>
@@ -150,7 +140,7 @@
             </ul>
             <h2>容易出错的地方</h2>
             <ul>
-            <li><strong>信息饥饿</strong>：每一步只接收前一步的输出，第 3 步需要的信息在第 1 步出现过、但第 2 步没保留就丢了。chain 是一根细管子，不是会自然漫流的水渠。应对是另带一个所有步骤都能读的累积上下文对象（分布式系统里叫 saga context）。</li>
+            <li><strong>信息饥饿</strong>：每一步只接收前一步的输出，第 3 步需要的信息在第 1 步出现过、但第 2 步没保留就丢了。chain 只传递前一步的输出，不会自动让早期信息流到后面。应对是另带一个所有步骤都能读的累积上下文对象（分布式系统里叫 saga context）。</li>
             <li><strong>闸门暴政</strong>：闸门设得太死永远过不去，"恰好 500 词"会无限拒绝 499 和 501，烧光 token 才发现。应对是范围加必要条件。</li>
             <li><strong>乘积效应被低估</strong>：单步通过率 95%、七步串起来整链通过率只剩约 70%。chain 越长，对单步通过率的要求越高。</li>
             <li><strong>第一个 prompt 的装配被忽略</strong>：生产 system prompt 通常由基础指令、用户身份、历史、当前任务、工具清单、风格、格式约束等多个数据源拼成，硬编成一坨长字符串会让最高频更新的那部分无法独立维护。</li>
@@ -161,7 +151,7 @@
             <li><strong>每步耗时 p99</strong>（健康区每步 p99 &lt;3 倍中位数）：chain 变慢时，这张分布图能最快找到拖后腿的那一步。</li>
             <li><strong>闸门重试分布</strong>（健康区 90% 一次过、9% 两次、1% 三次）：某步重试率突然升高，几乎一定是闸门与模型当前能力不匹配。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>chain = [step1, step2, step3]        # 每步自带 system_prompt + model + gate
 current = initial_input
 for step in chain:
@@ -177,19 +167,19 @@ for step in chain:
 return 成功(current, total_tokens, trace)
 </code></pre>
             <p>工程落地要点：闸门带容差；trace 的 tokens 和耗时结构化落到日志系统；中途需要时主动取回原始输入做参照（如数字核查回到原稿，不让前面改写产生的版本污染数字）。</p>
-            <h2>企业落地一例</h2>
-            <p>财经媒体内容编辑 agent 第二版改成七步链：校对（便宜模型，闸门校验输出长度不低于输入 95%）、改写（强模型，保留作者风格）、统一风格、数字核查（中等模型加 thinking，关键设计是回到原稿做参照，闸门要求数字 100% 匹配原稿）、起标题（输出 3 个候选）、写摘要、配图建议（三类必齐）。每步独立选模型是为了成本而非显摆。结果：数字核查准确率从 87% 涨到 99.4%，编辑信任度从 42% 涨到 91%，代价是单稿成本涨约 30%、延迟从 12 秒涨到 38 秒。对内容生产场景，这笔账值。这套模板可直接平移到合同审阅、医疗影像辅助、客服分诊——每步独立目标、独立模型、独立闸门。</p>
+            <h2>企业落地示例</h2>
+            <p>财经媒体内容编辑 agent 第二版改成七步链：校对（便宜模型，闸门校验输出长度不低于输入 95%）、改写（强模型，保留作者风格）、统一风格、数字核查（中等模型加 thinking，关键设计是回到原稿做参照，闸门要求数字 100% 匹配原稿）、起标题（输出 3 个候选）、写摘要、配图建议（三类必齐）。每步独立选模型是为了控制成本。结果：数字核查准确率从 87% 涨到 99.4%，编辑信任度从 42% 涨到 91%，代价是单稿成本涨约 30%、延迟从 12 秒涨到 38 秒。这套模板可直接平移到合同审阅、医疗影像辅助、客服分诊——每步独立目标、独立模型、独立闸门。</p>
             <h2>与其他模式的关系</h2>
             <ul>
             <li><strong>规划-执行（A2）</strong>：一对对偶，一轻一重。A3 是直线，A2 是图。任务能画成 DAG（有并行、有跨步依赖）就用 A2，是一根直线就用 A3。生产里常见 A2 在外、A3 在内的混合形态。</li>
             <li><strong>工具调度（A1）</strong>：嵌套关系而非替代。chain 的某一步内部可能调工具，那一步是 A1（在多个工具中选一个），但它发生在 chain 的某一节里。</li>
             <li><strong>护栏三明治（A5）</strong>：chain 的闸门是同步的程序化检查，A5 的 hook 是套在工具调用前后的夹层。两者都是"让流程在卡点处可拦截"。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>只要你的系统跟 LLM 多轮对话，你其实已经在用 prompt chain 了，区别只在它是显式还是隐式——显式的链你能给每段配模型、加闸门、留 trace、replay 失败步骤，隐式的链你只能祈祷模型这次别翻车。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

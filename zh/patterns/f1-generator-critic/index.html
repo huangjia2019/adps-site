@@ -93,31 +93,21 @@
 
             <h1>F1 · Generator-Critic · 生成-批评</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">反思 Reflection × 链式 Chain（传）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（2-4× 单次调用）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（2-4× 单次调用）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">06-02</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">反思模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 反思模块 4 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">一个 agent 内置两个角色，Generator 写、Critic 评，循环改进直到 critic 通过或达到迭代上限。</td>
             </tr>
             </tbody>
@@ -182,7 +172,7 @@
             <li><strong>critic-vs-expert 一致率</strong>（健康区 &gt;70%）：每周抽 50-100 条 critic 输出对比专家判断。低于 70% 要重写 critic prompt 或换模型。</li>
             <li><strong>质量增量</strong>（健康区比单次生成高 5-15%）：低于 3% 说明反思没起作用，高于 25% 说明 generator 单次配置本身有问题，先修 generator。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>output = generator(task)
 for i in range(MAX_ITERATIONS):       # MAX=3, Aider 同源熔断
     if external_critic:               # 有 deterministic 信号优先
@@ -197,7 +187,7 @@ for i in range(MAX_ITERATIONS):       # MAX=3, Aider 同源熔断
 return output, &quot;max_iterations_reached&quot;   # 触底转 HITL
 </code></pre>
             <p>四个工程要点：critic prompt 必须明示 no_changes_needed 是合法选项；有 test/schema/引用库等 deterministic 信号时优先走 external critic；max_iterations 不要随便调大，3 是经验上的最优；完整 history 留档作为 critic calibration 的源数据。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>一家学术出版社的论文摘要润色 Agent，第一版用单 prompt 完成（"请优化这段摘要"），线下评测平均编辑评分 8.2/10。第二版加了 Generator-Critic 循环（"写完自己 review，找 3 个改进点再优化"），平均分反而掉到 7.4——复盘 trace 发现 critic 在过度修改，把简洁摘要改写成冗长版，三个 issue 全是虚构的。第三版改了三件事：critic prompt 加"已写好就输出 no changes needed"，phantom issue 率从 16.3% 降到 7%；引入 3 角色 multi-critic（学术严谨性 / 简洁性 / 术语准确度）并行评后仲裁，其中术语 critic 是 external-grounded，查引用数据库验证摘要里的 cite 是否真实存在；每周抽 50 条 critic 输出对比专家判断校准 prompt。修完平均分升到 8.9，比第一版基线高 0.7，代价是单次 token 成本涨 2.8 倍。摘要属于 high-stake 内容，这笔账划算。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -205,11 +195,11 @@ return output, &quot;max_iterations_reached&quot;   # 触底转 HITL
             <li><strong>Adversarial Review（协作模块）</strong>：升级形态。Generator-Critic 是"同一个模型换 prompt"，Adversarial Review 是"独立 agent 带对抗激励"。前者解决"agent 怎么改自己"，一个 LLM 进程加两段 prompt 即可；后者解决"决策怎么经过 audit-grade 独立审查"，需要 model routing、独立 trace、跨 agent 编排，token 成本约 9 倍。错代价低用前者，金融审批 / 医疗诊断这类需要监管独立性的场景升级到后者。</li>
             <li><strong>Skill Package（F2）</strong>：衔接关系。Generator-Critic 改的是当下这次输出，Skill Package 沉淀的是跨任务的成功流程。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>Generator-Critic 的本质不是"加一个评审"，而是把"评估比生成简单"这条软件工程几十年的不对称性显式化——让同一个模型用"易"（评估）反过来约束"难"（生成）。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

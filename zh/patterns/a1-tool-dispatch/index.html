@@ -93,31 +93,21 @@
 
             <h1>A1 · Tool Dispatch · 工具调度</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">行动 Action × 路由 Route（选）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">①（与单次调用同量级，元数据开销可忽略）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">低（与单次调用同量级，元数据开销可忽略）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">05-02</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">行动模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 行动模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">Agent 在每一步行动前，由工程层依据工具元数据从工具集中挑出最合适的工具，而不是让模型自己临场决定。</td>
             </tr>
             </tbody>
@@ -125,11 +115,11 @@
             <hr />
             <h2>它解决什么问题</h2>
             <p>工具一多，agent 选错工具的概率就上来了。这里有一个反直觉的事实：LLM 擅长用工具（填参数、解读返回值），但不擅长选工具。一个接了 17 个工具的物流派单 agent，曾经把 80 单全部派给同一个堵在路上的司机——它每一步都"觉得"自己选对了，错误藏在"没刷新司机状态"和"没看路况"这些它注意不到的细节里。</p>
-            <p>Tool Dispatch 把"选哪个工具"这件事从模型手里收回到工程层。它的核心判断是：选工具是可靠性工程，不是 prompt 工程。靠的不是写一段更聪明的提示，而是给每个工具补足元数据，再配上配额、状态刷新、副作用追踪这一整套工程契约。</p>
+            <p>Tool Dispatch 把"选哪个工具"这件事从模型手里收回到工程层。它的核心判断是：选工具是可靠性工程。靠的不是写一段更聪明的提示，而是给每个工具补足元数据，再配上配额、状态刷新、副作用追踪这一整套工程契约。</p>
             <h2>为什么坐标是「行动 × 路由」</h2>
             <ul>
             <li><strong>纵轴 · 行动</strong>：agent 要把决策变成对外影响，靠的就是工具调用。多工具场景下"调哪个"是行动端最前置、也最高频的决策，所以它属于行动模块而非推理模块。</li>
-            <li><strong>横轴 · 路由</strong>：它的工作方式是基于当前 intent 和 context，把这一次调用导向最合适的那个工具，是典型的路由结构，而不是链式串联或层级包装。同模块的最简工具集（A4）也落在路由这一侧，但姿态相反——A1 解决"怎么挑"，A4 解决"挑之前先砍"。</li>
+            <li><strong>横轴 · 路由</strong>：它的工作方式是基于当前 intent 和 context，把这一次调用导向最合适的那个工具，是典型的路由结构，而不是链式串联或层级包装。同模块的最简工具集（A4）也落在路由这一侧，但分工不同——A1 解决"怎么挑"，A4 解决"挑之前先砍"。</li>
             </ul>
             <h2>核心机制</h2>
             <p>工业级 Tool Dispatch 的质量，主要由工具元数据的丰富度决定。OpenAI 早期 function calling 只有 name、description、parameters 三个字段，够 demo 用。Claude Code 的工具 schema 扩到了 14 个字段，按用途大致分成八类：标识、动态描述、双 schema、执行特性、UI 行为、来源标记、渐进披露、生命周期。</p>
@@ -159,7 +149,7 @@
             </table>
             <h2>适合的生产场景</h2>
             <ul>
-            <li><strong>工具数量多、副作用多、错调代价大三者叠加</strong>：物流派单、客服工单、运维操作。任何一件不占都是过度工程。</li>
+            <li><strong>工具数量多、副作用多、错调代价大三者叠加</strong>：物流派单、客服工单、运维操作。</li>
             <li><strong>接入 MCP 等外部工具协议</strong>：外部工具来源不可信，必须靠元数据里的来源标记加额外安全审查。</li>
             <li><strong>固定流程任务</strong>：可以更进一步走 Programmatic Tool Calling，由工程层显式编排调用序列，模型只负责填参数和解读结果，减少来回、容错更强、审计更清晰。</li>
             </ul>
@@ -177,7 +167,7 @@
             <li><strong>工具幻觉率</strong>（健康区 &lt;5%）：调用不存在的工具或填错参数的比例。靠 registry 严格校验加调用前 schema 检查压制。</li>
             <li><strong>平均每任务工具数</strong>（健康区 3-7）：少了说明 agent 没干活，多了是 over-tooling。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>dispatch(tool_name, args, session):
     工具不存在        → 拒绝（tool_hallucination）
     配额已用满        → 拒绝（quota_exceeded）
@@ -189,22 +179,22 @@
     返回 DispatchTrace（工具/参数/触发方/状态/拒因/耗时）
 </code></pre>
             <p>工程落地要点：元数据默认按不安全处理；quota 按主参数计（如派单按司机 id 计）；MCP 工具加来源标记走额外的描述校验和行为监控。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>梁博团队的执行型 agent 把工具、技能、知识库分成三种角色：工具是"手"，技能是"套路"，知识库是"地图加手册"。agent 通过 <code>retrieve</code> 看地图、<code>use_skill</code> 读套路、<code>call_tool</code> 出手——出手前先看图读套路，正是 Tool Dispatch 在工程层做选择的体现。落到那个城配派单 agent 上，团队重写 dispatch 层时加了五件事：工具元数据扩展、selection guidance、写操作前强制状态刷新、单 session 内同一司机派单配额、saga 副作用追踪。准确率从 60% 升到 96%，代价是 dispatch 层多了约 800 行代码。多出来的每一行，本质都是把工程师踩过的坑固化成了机器执行的规则。</p>
             <h2>与其他模式的关系</h2>
             <ul>
-            <li><strong>最简工具集（A4）</strong>：同格互补。A1 在给定工具集里挑得准，A4 先把工具集砍到合理规模让 A1 挑得动——挑之前先砍，砍完再挑。</li>
+            <li><strong>最简工具集（A4）</strong>：同格互补。A1 在给定工具集里挑得准，A4 先把工具集砍到合理规模让 A1 挑得动。</li>
             <li><strong>规划-执行（A2）</strong>：A1 是单步决策的优化，A2 是多步任务的整体编排。Programmatic Tool Calling 是两者的交汇——工程层定调用序列，每步内部仍是一次 dispatch。</li>
             <li><strong>护栏三明治（A5）</strong>：A5 在 dispatch 的前后套 pre-check 和 post-check，与 A1 的 quota、state refresh 是嵌套关系——A1 选对工具，A5 保证选错时也兜得住。</li>
             <li><strong>复杂度路由（R2）</strong>：思路同源，都是基于 context 做路由，区别在 R2 路由的是推理档位，A1 路由的是工具。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>Tool Dispatch 的本质不是"写一段挑工具的提示"，而是把工程师群体多年积累的工具操作纪律，编码成元数据和工程契约交给 agent 用——demo 级 agent 的工具元数据是 3 字段，生产级是 14 字段，这道字段差就是玩具和系统之间的距离。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <ul style="list-style: none; margin: 0.5rem 0 1rem 0; padding: 0;">
-                <li style="margin-bottom: 0.6rem; line-height: 1.55;"><a href="cases/liangbo/" style="font-weight: 600;">梁博东方屹腾 · 工具调度落地</a><span style="color: var(--color-text-muted);"> — 工具不裸调、封装进行动能力，注册时声明机械状态依赖坐标，原 API 不改造即可被编排。</span></li>
+                <li style="margin-bottom: 0.6rem; line-height: 1.55;"><a href="cases/liangbo/" style="font-weight: 600;">东方屹腾 · 工具调度落地</a><span style="color: var(--color-text-muted);"> — 工具不裸调、封装进行动能力，注册时声明机械状态依赖坐标，原 API 不改造即可被编排。</span></li>
             </ul>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 

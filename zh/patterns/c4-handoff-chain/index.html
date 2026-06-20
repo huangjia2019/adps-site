@@ -93,31 +93,21 @@
 
             <h1>C4 · Handoff Chain · 交接链</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">协作 Collaboration × 链式 Chain（传）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（每次交接加一次 LLM 调用）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（每次交接加一次 LLM 调用）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">07-05</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">协作模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 协作模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">把一个长流程拆成 N 个职责清晰的 agent，前一棒处理完后通过结构化 HandoffPacket（不是裸文本）把关键状态传给下一棒，每一棒只擅长一件事。</td>
             </tr>
             </tbody>
@@ -191,7 +181,7 @@
             <li><strong>决策保留率</strong>（健康区高）：前一棒的决策被完整传给下一棒的比例。低说明 HandoffPacket 退化成了 raw history dump。</li>
             <li><strong>SLA 达成率</strong>（按分级核算）：各级 agent 在自己 SLA 窗口内完成的比例，配合 sentiment carry over 监控升级链路里的客户情绪变化。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>HandoffChain.execute(request, initial_agent, max_hops=4):
     current, prev_packet = initial_agent, None
     for sequence in 1..max_hops:
@@ -208,8 +198,8 @@
 HandoffPacket: 五层 schema(Goal / Artifacts / Decisions / Rejected Paths / Next Required)
 </code></pre>
             <p>四个工程要点：每棒的 system prompt 和 tool 权限严格分级（一线不能给退款权限）；can_handoff_to 显式列允许的下一棒；max_hops 设 3-4 超过强制升人工；audit log 满足跨棒数据流转的合规留档。</p>
-            <h2>企业落地一例</h2>
-            <p>某中型 SaaS 公司用 LangGraph 部署了一套 L1/L2/L3/Director 四级客户支持 Agent，6 月上线 10 月被砍，导火索是一张被转了 1.8 万次的截图：客户说"webhook 收不到事件，2 万订单卡着"，一线转给二线，二线开口又问"请问遇到什么问题""请问您的账户邮箱"，客户回"我刚才说了""上面已经有了"。根因分析的结论让所有人尴尬——四级架构每个交接环节都是重新开一个 session，前一棒只传客户上一句话的原文。这不是技术 bug，是设计选择，当初觉得"前面处理过的下一个不需要看了，省 token"。修法是给每次交接打包五层 HandoffPacket：客户诉求、已查过的 KB 和跑过的脚本、做过的决策含 why、已排除的方向、下一步动作，配合模型分级（一线 Haiku 跑量、工程层 Opus 处理复杂）、工具权限渐进（一线只读、Director 才能批退款）、链长上限 4 棒超过升人工。另一个值得引用的落地是执行型 Agent 的控制权回交：当一个 ReAct agent 判断当前决策类型是 plan（或 Skill 契约约定为 PlanExecute）时，它不自己往下执行，而是通过 handoff 把控制权交回 orchestrator，由 orchestrator 决定后续编排——这把交接链用在了 agent 内部的控制流移交上，不只是面向用户的分级支持。</p>
+            <h2>企业落地示例</h2>
+            <p>某中型 SaaS 公司用 LangGraph 部署了一套 L1/L2/L3/Director 四级客户支持 Agent，6 月上线 10 月被砍，导火索是一张被转了 1.8 万次的截图：客户说"webhook 收不到事件，2 万订单卡着"，一线转给二线，二线开口又问"请问遇到什么问题""请问您的账户邮箱"，客户回"我刚才说了""上面已经有了"。根因分析的结论是：四级架构每个交接环节都是重新开一个 session，前一棒只传客户上一句话的原文。这不是技术 bug，是设计选择，当初觉得"前面处理过的下一个不需要看了，省 token"。修法是给每次交接打包五层 HandoffPacket：客户诉求、已查过的 KB 和跑过的脚本、做过的决策含 why、已排除的方向、下一步动作，配合模型分级（一线 Haiku 跑量、工程层 Opus 处理复杂）、工具权限渐进（一线只读、Director 才能批退款）、链长上限 4 棒超过升人工。另一个值得引用的落地是执行型 Agent 的控制权回交：当一个 ReAct agent 判断当前决策类型是 plan（或 Skill 契约约定为 PlanExecute）时，它不自己往下执行，而是通过 handoff 把控制权交回 orchestrator，由 orchestrator 决定后续编排——这把交接链用在了 agent 内部的控制流移交上，不只是面向用户的分级支持。</p>
             <h2>与其他模式的关系</h2>
             <ul>
             <li><strong>Prompt Chaining（行动模块）</strong>：同源对偶。Prompt Chaining 是单 agent 多 prompt 串联（context 自然延续），交接链是多 agent 跨 session 显式 state 传递（必须 schema 化）。关键差别在 context 是否需要显式 schema 化。</li>
@@ -217,11 +207,11 @@ HandoffPacket: 五层 schema(Goal / Artifacts / Decisions / Rejected Paths / Nex
             <li><strong>扇出聚合（C2）</strong>：交接链是 N 个 agent 顺序干，扇出是 N 个 worker 同时干。</li>
             <li><strong>子代理隔离（C5）</strong>：交接链关注跨棒的 state 显式传递，子代理隔离关注 sub-agent 的 context 边界，两者关注点不同但都涉及 agent 间的信息流设计。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>交接链的工程本质不是数据传递，是<strong>把企业里已经存在 30 年的人类组织流程 schema 化成 agent 能执行的工程结构</strong>——赢面在五层 schema 都被工程化的场景，输面在只 dump 对话历史还假装那叫交接的场景。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

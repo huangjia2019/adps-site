@@ -93,31 +93,21 @@
 
             <h1>R1 · Chain-of-Thought · 思维链</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">推理 Reasoning × 链式 Chain（传）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">①（约等于一次普通调用，开 thinking 时按 token 多付一档）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">低（约等于一次普通调用，开 thinking 时按 token 多付一档）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">04-02</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">推理模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 推理模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">把模型的推理过程显性化成一段可存储、可审计、可跨模型迁移的结构化数据，让"为什么得出这个结论"有据可查。</td>
             </tr>
             </tbody>
@@ -125,7 +115,7 @@
             <hr />
             <h2>它解决什么问题</h2>
             <p>模型给出一个结论，但没人知道它是怎么得出来的。结论对的时候没人追问，结论错的时候无法 debug，监管来查的时候拿不出依据。Agent 跟传统软件最大的差别之一就是这种"灰盒性"——它不是黑盒，也不是真白盒，中间这层推理过程如果不落下来，出事时根本无法 root-cause。</p>
-            <p>Chain-of-Thought 把这段推理过程从模型内部拽出来，变成 trajectory 里的一等数据。在 2026 年，它已经不是 2022 年那句 "Let's think step by step" 的 prompt 技巧——reasoning model 本来就会 emit 推理过程，工程层要做的是管理这段过程的生命周期：怎么落库、怎么审计、跨模型 fallback 时怎么迁移、按任务复杂度怎么控制深度。一句话概括这个转变：写 Agent 不写 CoT trace，等于写后端不打 log。</p>
+            <p>Chain-of-Thought 把这段推理过程从模型内部拽出来，变成 trajectory 里的一等数据。在 2026 年，它已经不是 2022 年那句 "Let's think step by step" 的 prompt 技巧——reasoning model 本来就会 emit 推理过程，工程层要做的是管理这段过程的生命周期：怎么落库、怎么审计、跨模型 fallback 时怎么迁移、按任务复杂度怎么控制深度。写 Agent 不写 CoT trace，等于写后端不打 log。</p>
             <h2>为什么坐标是「推理 × 链式」</h2>
             <ul>
             <li><strong>纵轴 · 推理</strong>：CoT 把"为什么"显性化，让模型把思考过程写出来，是纯推理领域的原点模式。推理模块其他 4 个模式（路由、并行、迭代、双模）都在 CoT 这条基线上做不同方向的扩展。</li>
@@ -160,7 +150,7 @@
             <li><strong>fallback strip 成功率</strong>（健康区接近 100%）：主模型切 fallback 时正确清理跨模型 thinking 的比例。低于 100% 意味着存在会让 Agent 调用直接失败的隐患。</li>
             <li><strong>trace 可回查率</strong>（健康区 100%）：任意一条历史决策能按 trace_id 调出完整 reasoning 的比例。合规场景这是硬性要求。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>任务进来 → 按复杂度选 effort 档（off / low / medium / high / max）
 模型 emit thinking blocks → normalize 成统一 schema → 进结构化 trace
 若主模型限流 fallback：
@@ -171,7 +161,7 @@
 返回 final_answer + 完整 trace（按 trace_id 索引，长期留档）
 </code></pre>
             <p>落地四个要点：reasoning model 不要再加 step instruction；effort 控制做成 per-request / per-task 配置；标签归一要随新模型持续扩展；trace 打到结构化 trace bus 支持长周期回查。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>某企业级执行型 Agent 团队（梁博团队）在落地时发现一个分水岭：思维链不是"多写一段思考给用户看"，而是每次调用产出一个可被程序消费的 Decision 控制信号。具体做法是把模型输出拆成 thinking 和 answer 两段——thinking 段是推理过程进 trace 留档，answer 段是结构化的 JSON 决策对象，被下游程序直接解析执行。两段分离之后，CoT 从"内容"变成了"控制流"：answer 里的字段直接驱动后续动作，thinking 里的过程供审计回查。</p>
             <p>关键的工程兜底是 JSON 解析失败时有确定性回退——模型偶尔会把决策写得不符合 schema，这时不是让 Agent 崩溃或随机重试，而是落到一个预定义的安全默认动作上。这套设计是从"内容型 Agent"（生成文本给人读）走向"执行型 Agent"（产出信号给程序用）的关键。配套决策还包括 thinking 完整留档备审、answer schema 强校验、解析失败计数接入监控。</p>
             <h2>与其他模式的关系</h2>
@@ -181,11 +171,11 @@
             <li><strong>迭代假设验证（R4）</strong>：迭代的每一轮也是一条思维链，迭代是把多条思维链在时间维度串起来反复修正。</li>
             <li><strong>双模架构（R5）</strong>：Reasoner 那一侧的深度推理本质就是一条完整思维链，Talker 那一侧则刻意不做深推理。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>Chain-of-Thought 在 2026 年的本质不是"教模型想"，而是把模型已经在想的过程当成一等数据来管理——它是 Agent 时代可观测性的根基，不是可选项。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

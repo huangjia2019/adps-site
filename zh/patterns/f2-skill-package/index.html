@@ -93,38 +93,28 @@
 
             <h1>F2 · Skill Package · 技能包</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">反思 Reflection × 路由 Route（选）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（封装一次性投入 + 复用时近乎零边际）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（封装一次性投入 + 复用时近乎零边际）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">06-03</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">反思模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 反思模块 4 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">把反复成功的工作流封装成可命名、可加载、可复用的结构化资产，下次同类任务直接调用而非从零摸索。</td>
             </tr>
             </tbody>
             </table>
             <hr />
             <h2>它解决什么问题</h2>
-            <p>同一类任务 agent 干过 5 次、每次都干成，但每次都从零开始——读同样几份 reference、试错几轮、走完一遍跟上次一模一样的路径。第 6 次同类任务来，agent 又重走一遍。Token 烧、时间长、用户烦，根因是 agent 干完之后没有任何东西被沉淀下来。</p>
+            <p>同一类任务 agent 干过 5 次、每次都干成，但每次都从零开始——读同样几份 reference、试错几轮、走完一遍跟上次一模一样的路径。第 6 次同类任务来，agent 又重走一遍。Token 浪费、耗时长，根因是 agent 干完之后没有任何东西被沉淀下来。</p>
             <p>Skill Package 把"做对的事"凝固成一份结构化资产，通常是 YAML frontmatter（name + description + triggers）加 markdown body（steps + gotchas + examples）加 bundled scripts。下次同类任务来，agent 路由到对应 skill，几秒进入主路，不再重新摸索。它和 Generator-Critic 的区别在颗粒度——后者改的是单次输出，Skill Package 沉淀的是跨任务的能力。ACT-R 认知架构给这件事一个学术名字叫 proceduralization，即把陈述性知识编译成程序性技能；Anthropic 把它做成了 SKILL.md 标准。</p>
             <h2>为什么坐标是「反思 × 路由」</h2>
             <ul>
@@ -146,7 +136,7 @@
             </ul>
             <h2>容易出错的地方</h2>
             <ul>
-            <li><strong>给不该固化的任务硬做 skill</strong>：任务每次都不一样（开放域研究）、只跑一次、流程还在快速迭代、判断密集型——这四类沉淀风险高于复用收益，过早凝固反而成为 agent 的枷锁。Skill Package 的价值在"反复出现 + 流程稳定 + 错代价高"三个条件叠加时。</li>
+            <li><strong>给不该固化的任务硬做 skill</strong>：任务每次都不一样（开放域研究）、只跑一次、流程还在快速迭代、判断密集型——这四类沉淀风险高于复用收益。Skill Package 的价值在"反复出现 + 流程稳定 + 错代价高"三个条件叠加时。</li>
             <li><strong>skill library 污染</strong>：agent 自蒸馏的低质量 skill 不经 curation 直接进库，下次召回误导其他 agent。library 从 50 个膨胀到 500 个但平均成功率从 85% 跌到 55%。防法是多重蒸馏触发条件加试用期加 weekly curation。</li>
             <li><strong>skill 过期</strong>：基础设施变了但 skill 没跟着改，agent 按过期 skill 执行反而错，运维场景尤其常见。防法是成功率监控加自动告警加版本绑定（SKILL.md 里标 tested_with）。</li>
             <li><strong>description 失配</strong>：description 写得太泛或太窄，agent 召回时挑错 skill 或该用没用。description 必须含具体场景，triggers 列表要够细。</li>
@@ -158,7 +148,7 @@
             <li><strong>library 健康度</strong>（健康区 平均成功率不随规模下降）：library 膨胀时平均成功率应保持稳定，下降说明污染。</li>
             <li><strong>加载 token 占比</strong>（健康区 三阶段下启动开销 &lt;5%）：全量加载会让这个数字爆掉，三阶段把它压到可控。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code># Stage 1 Discovery: 启动只加载 name + description
 catalog = [{&quot;name&quot;: s.name, &quot;desc&quot;: s.description} for s in library]
 
@@ -179,7 +169,7 @@ REFINE(use_count &gt; 5 and success_rate &lt; 50%)
 PROMOTE(use_count &gt; 20 and success_rate &gt; 85%)
 </code></pre>
             <p>四个工程要点：三阶段 loading 是 token 经济的核心；自蒸馏 skill 必须经试用期才转正；人写 skill 和自蒸馏 skill 分级信任；weekly curation 三档（EVICT / REFINE / PROMOTE）是抗污染和抗过期的常规运营动作。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>一家 B2B SaaS 公司有一位 Top 销售老张——签单率 38%（团队平均 12%），客户复购率 82%（团队平均 51%）。老张要去大厂，老板担心他的本事随人走。团队复盘发现老张的高签单率不在天赋，在一套高度结构化的流程：客户首次接触前查 LinkedIn 和公司新闻 5 分钟、第一次电话用固定开场、需求挖掘按 5 问漏斗、异议处理用预设话术库、签约前必发"决策清单"邮件。团队把这套流程封装成 SKILL.md，gotchas 放顶部（"绝对不要第一次电话就 pitch 产品，拒绝率 80%"），deterministic 步骤用 bundled scripts，每个环节配完整 worked example。第二个月新员工带着这份 skill 跟客户聊，签单率从入行平均 12% 升到 24%，成长曲线压缩约 50%。配套工程决策包括：核心 SOP 走人写加 sales leader review 加进 git，agent 自蒸馏招式走独立 namespace 加低信任级别，customer-facing skill 必须人审，每周 review 决定 EVICT / REFINE / PROMOTE。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -188,11 +178,11 @@ PROMOTE(use_count &gt; 20 and success_rate &gt; 85%)
             <li><strong>Experience Replay（F3）</strong>：配对兄弟模式。Skill Package 装的是 verified 可调用单位（做过多次都成功，封成 skill 直接调），Experience Replay 装的是更宽泛的参考资产（有用但不一定 verified）。agent 优先调 skill，没匹配的回退到 experience 检索。</li>
             <li><strong>RAG（记忆模块）</strong>：互补合奏。RAG 管"知道什么"（declarative，事实检索），Skill Package 管"会做活儿"（procedural，流程复用），企业 agent 落地里两者并用。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>Skill Package 不是工作流模板，是 agent 的职业能力——它让 agent 既有手册又保留判断力，把人脑里的隐性流程搬到组织能复用的资产层，这是 agent 从 demo 玩具变成组织资产的转折点。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

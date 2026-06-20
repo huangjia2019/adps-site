@@ -93,39 +93,29 @@
 
             <h1>C2 · Fan-out / Gather · 扇出聚合</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">协作 Collaboration × 并行 Parallel（撒）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">③（N× 单 agent 调用，换 1/N 时长）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">高（N× 单 agent 调用，换 1/N 时长）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">07-03</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">协作模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 协作模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">orchestrator 把一批可独立执行的子任务并行分发给 N 个 sub-agent，每个独立完成，最后由 aggregator 用聚合策略合并成单一输出，用 N 倍算力换 1/N 时长。</td>
             </tr>
             </tbody>
             </table>
             <hr />
             <h2>它解决什么问题</h2>
-            <p>有些任务单 agent 顺序做就是太慢。十万页财务文档让一个 agent 读完要 35 小时，可法务团队季报披露前只有 24 小时窗口——再强的单 agent 也搬不动这堵墙。</p>
-            <p>扇出聚合把一个大任务切成多个可独立执行的子任务，并行分发给 N 个 sub-agent，最后聚合。它的收益不在省 token——token 成本是线性翻倍的——而在压缩 wall-clock 时间：worker 数量上去，总时长几乎线性下降。但它有一个常被低估的难点：把任务派出去几乎不花工程成本，把结果合回来才是真正的工程。多个 worker 看到同一份材料时输出会重叠，聚合阶段如果不做去重和冲突消解，再多 worker 也只是堆噪声。</p>
+            <p>有些任务单 agent 顺序做就是太慢。十万页财务文档让一个 agent 读完要 35 小时，可法务团队季报披露前只有 24 小时窗口。</p>
+            <p>扇出聚合把一个大任务切成多个可独立执行的子任务，并行分发给 N 个 sub-agent，最后聚合。它的收益不在省 token——token 成本是线性翻倍的——而在压缩 wall-clock 时间：worker 数量上去，总时长几乎线性下降。但它有一个常被低估的难点：把任务派出去几乎不花工程成本，把结果合回来才是真正的工程。多个 worker 看到同一份材料时输出会重叠，聚合阶段必须做去重和冲突消解。</p>
             <h2>为什么坐标是「协作 × 并行」</h2>
             <ul>
             <li><strong>纵轴 · 协作</strong>：这是把一个任务拆给多个 sub-agent 并行做再汇总，分发的实体是不同的子任务，属于多 agent 协作拓扑。区别于推理模块的并行探索——后者并行的是同一道题的多条解法（推理策略），前者并行的是切给不同 agent 的不同子任务（协作拓扑）。</li>
@@ -136,7 +126,7 @@
             <ol>
             <li><strong>切分扇出</strong>：把大任务按"语义独立性"切成 N 份，并行分发。切分标准不是按文档数等分，而是让子任务彼此独立——worker B 不能依赖 worker A 的输出，否则就该用交接链而不是扇出。</li>
             <li><strong>隔离执行</strong>：每个 sub-agent 跑在独立 context 里完成自己的子任务，互不通信。隔离强度跟输出冲突可能性成正比——各查不同语料的研究任务用软隔离就够，多 agent 改重叠文件的写代码任务要用物理隔离（独立 Git worktree 或独立容器）。</li>
-            <li><strong>聚合收回</strong>：用聚合策略把 N 路结果合并。这才是扇出的灵魂，聚合没做对全套链路就废。</li>
+            <li><strong>聚合收回</strong>：用聚合策略把 N 路结果合并。聚合没做对，全套链路就不成立。</li>
             </ol>
             <p>聚合不是简单拼接，至少要做五件事：</p>
             <table>
@@ -191,7 +181,7 @@
             <li><strong>加速比</strong>（健康区接近 N）：N 个 worker 实际带来的时长压缩倍数。明显低于 N 说明并发被限流削掉、或任务其实有依赖。</li>
             <li><strong>聚合成本占比</strong>（健康区 &lt; 15%）：聚合这一步消耗的算力占总成本的比例，过高就换更轻的聚合策略或分层聚合。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>FanoutGather.execute(goal, perspectives, strategy):
     workers = decompose(goal, perspectives)    # 按语义独立性切 N 份
     results = 并行 gather(                       # 信号量控并发 + retry + backoff
@@ -206,7 +196,7 @@ aggregate(results, strategy):
     structured  → schema 化结构合并
 </code></pre>
             <p>四个工程要点：worker model 用便宜的、aggregator model 必须用强的（综合是质量瓶颈）；并发初始值跟 provider 的 RPM tier 对齐，从 5-10 起步加监控逐步上调；失败 worker 不阻塞其他、设 partial failure 阈值；保留每路完整 trace 供审计。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>某上市公司的季度合规扫描 Agent，第一版单 agent 顺序读完十万页财务文档要 35 小时，直接超出法务团队 24 小时的披露前窗口。第二版改成 12 个 worker 各负责一类文档（财报 4 个、邮件 4 个、合同 4 个）并行扫描，总时长压到 4 小时。但上线后立刻撞上聚合难题：12 个 worker 各标了 200 多个风险点，同一份合同变更被三个 worker 用三种说法标记（"对赌条款增加""earnout clause expansion""对赌新增可触发回购"），gather 阶段统计出 600 项风险，其中至少六成是重复。法务总监的原话是"agent 跑得快，但报告我看不动"。第三版给 gather 加了三件事：基于 embedding 的语义去重、概念归一化（把三种说法 canonical 成一条）、置信度加权（单 worker 标的权重 0.6，多 worker 都标的权重 1.0）。最终风险报告从 600 多项压到 80 项 high-confidence 加 120 项 needs-review。如果是政府或国企的大型招标投标书评审场景，还要叠加合规约束：worker 间严格隔离满足评委独立性要求、全 trace 留档 7 年、partial failure 阈值不低于 95%（漏评一份在审计阶段会被卡）。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -215,11 +205,11 @@ aggregate(results, strategy):
             <li><strong>对抗评审（C3）</strong>：扇出的 N 个 worker 是互补关系（各看一面拼出全景），对抗评审的 reviewer 是对抗关系（独立审查决策健壮性）。</li>
             <li><strong>子代理隔离（C5）</strong>：扇出的每个并行 branch 都依赖隔离这个内功——独立 context，gather 阶段只看 reduced 结果。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>扇出聚合看上去是省 wall-clock 时间，工程实战里是<strong>投资 aggregation 复杂度加复刻你团队真实的协作拓扑</strong>——N 倍 worker 让时长变 1/N 的前提，是你给聚合也投了 N 倍的工程精力。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

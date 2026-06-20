@@ -93,31 +93,21 @@
 
             <h1>A2 · Plan-and-Execute · 规划-执行</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">行动 Action × 编排 Orchestrate（协）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（一次规划 + 多次执行，异构模型可显著压成本）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（一次规划 + 多次执行，异构模型可显著压成本）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">05-03</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">行动模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 行动模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">Agent 先生成完整 plan（含依赖结构、资源预估、审批节点），再按 plan 执行，遇到偏离时局部 replan 而非全局重写。</td>
             </tr>
             </tbody>
@@ -142,7 +132,7 @@
             <p>研究数据印证了这套范式的经济性。ReWOO 把 plan-execute 的 LLM 调用压到 2 次（一次规划加一次综合），中间所有工具调用并行执行不走模型，相比 ReAct 范式 token 效率高 5 倍、准确率还高 4 个点。</p>
             <h2>适合的生产场景</h2>
             <ul>
-            <li><strong>目标明确、步骤可枚举、副作用敏感三者叠加</strong>：HR 招聘、信贷审批、运维变更。三件全占不用 plan 是失职，一件不占硬上 plan 是过度工程。</li>
+            <li><strong>目标明确、步骤可枚举、副作用敏感三者叠加</strong>：HR 招聘、信贷审批、运维变更。</li>
             <li><strong>有硬性流程约束的合规场景</strong>：比如"背景调查必须在发 offer 之前"。这类约束可以编码进 plan validator，规划阶段就拦下违规的 plan。</li>
             <li><strong>需要崩溃恢复的长任务</strong>：每步写 checkpoint，崩溃后从 checkpoint resume，把 plan-execute 当可恢复事务来设计。</li>
             </ul>
@@ -160,7 +150,7 @@
             <li><strong>replan 频率</strong>（健康区每 5 步一次左右）：过高是 thrashing，长期为零是 ossification 的前兆。</li>
             <li><strong>缓存命中率</strong>（健康区越高越好）：被 Manus 团队称为生产 agent 单一最重要的指标，直接决定单 token 成本。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>plan = planner(goal, context)        # 强模型，一次
 若用户不批准 → 返回
 while plan 未完成:
@@ -172,7 +162,7 @@ while plan 未完成:
 返回 plan + 完整执行 trace
 </code></pre>
             <p>工程落地要点：Planner、Executor、Approval 用依赖注入，由业务决定具体模型和 prompt；destructive 步骤登记 saga inverse；plan 写文件加版本化。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>梁博团队把"战略层计划"与"战术层执行"显式拆开。Plan-Exec 模式下，计划一旦由规划层写入 Workspace 的 DAG，调度器就按依赖关系推进，不再依赖 LLM 逐步重新选择路径。这正面解决了 ReAct 的结构性问题——ReAct 每一步都要再调一次 LLM 来决策，宏观执行顺序无法被工程化地钉死，长任务里随时可能跑偏。把顺序固化进 DAG 之后，模型只在单步内填参数和解读结果，宏观流程交给确定性的调度器，长任务的可靠性和成本才同时可控。落到 HR 招聘案例：重写成 Planner 加 Executor 加 Approval Gate 三段后，月度账单从 18 万降到 6 万，招聘周期从 23 天压到 16 天。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -181,13 +171,13 @@ while plan 未完成:
             <li><strong>护栏三明治（A5）</strong>：plan 里的审批节点和合规校验，落地时常由 A5 的 pre-check 实现。两者都把控制权交还给用户。</li>
             <li><strong>迭代假设验证（R4）</strong>：R4 是推理端的"边做边调"，A2 是行动端的"先定后调"。A2 的局部 replan 借鉴了 R4 的反馈调整思路。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>Plan-and-Execute 不是"列 todo"，而是把人类几十年的项目管理工程沉淀（WBS、PERT、Saga、DAG 调度）原样复刻到 LLM 上——它之所以比单 agent ReAct 更耐用，是因为它站在成熟工程的肩膀上，而且把控制权交还给了用户。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <ul style="list-style: none; margin: 0.5rem 0 1rem 0; padding: 0;">
-                <li style="margin-bottom: 0.6rem; line-height: 1.55;"><a href="cases/liangbo/" style="font-weight: 600;">梁博东方屹腾 · 规划执行落地</a><span style="color: var(--color-text-muted);"> — ReAct 跨步漏步逼出来的任务 DAG + 状态机，把执行顺序从模型判断里拿出来钉进任务图。</span></li>
+                <li style="margin-bottom: 0.6rem; line-height: 1.55;"><a href="cases/liangbo/" style="font-weight: 600;">东方屹腾 · 规划执行落地</a><span style="color: var(--color-text-muted);"> — ReAct 跨步漏步逼出来的任务 DAG + 状态机，把执行顺序从模型判断里拿出来钉进任务图。</span></li>
             </ul>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 

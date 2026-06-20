@@ -93,31 +93,21 @@
 
             <h1>R5 · Talker-Reasoner · 双模架构</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">推理 Reasoning × 层级 Hierarchy（分）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（Talker 用便宜模型扛大部分对话，Reasoner 才用贵模型）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（Talker 用便宜模型扛大部分对话，Reasoner 才用贵模型）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">并入 04-03 / 04-01</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">推理模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 推理模块 5 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">把 Agent 拆成快而浅的 Talker 和慢而深的 Reasoner，通过共享 belief state 协同，让 Agent 在深度思考的同时还能即时跟用户说话。</td>
             </tr>
             </tbody>
@@ -125,7 +115,7 @@
             <hr />
             <h2>它解决什么问题</h2>
             <p>很多推理模式默认了一个不该默认的前提——用户能等。给 Agent 时间想清楚 24 秒，在异步任务里没问题，但在实时交互场景里是灾难：对话场景 200 毫秒不回话用户就掉线，voice agent 1 秒沉默就尴尬，实时协作 3 秒没反应就打断节奏。问题的核心不是 Agent 想得慢，而是它在想的时候什么都不说——用户不介意 Agent 用 24 秒思考，介意的是 24 秒里 Agent 一片静默。</p>
-            <p>Talker-Reasoner 把"实时响应"和"深度推理"两种相互冲突的目标拆到两个 Agent 上。一个 Talker 永远在 200 毫秒内回应、保持对话流畅，一个 Reasoner 在后台慢慢做深度分析，两者通过共享 belief state 协同。它要的不是更高的质量，而是把延迟从用户感知里藏起来——同样的思考时间，体验天差地别。它对前端的实时约束和后端的深思约束同时满足。</p>
+            <p>Talker-Reasoner 把"实时响应"和"深度推理"两种相互冲突的目标拆到两个 Agent 上。一个 Talker 永远在 200 毫秒内回应、保持对话流畅，一个 Reasoner 在后台慢慢做深度分析，两者通过共享 belief state 协同。它要的不是更高的质量，而是把延迟从用户感知里藏起来——同样的思考时间，体验天差地别。</p>
             <h2>为什么坐标是「推理 × 分层」</h2>
             <ul>
             <li><strong>纵轴 · 推理</strong>：它把"实时响应"和"深度推理"两种 reasoning modality 分开，是一个双系统的推理架构——对应 Kahneman 的 System 1（快、自动、低耗）和 System 2（慢、刻意、高耗）。这是认知科学在 Agent 上的工程映射，不是单一推理通道。</li>
@@ -138,7 +128,7 @@
             <li><strong>Reasoner 异步深思</strong>：用贵的慢模型，被触发后在后台跑深度分析（10-30s），跑完把结构化结论写到共享 belief state。它不阻塞对话。</li>
             <li><strong>belief state 协同 + 自然过桥</strong>：两个 Agent 通过一份共享 state 通信，写要加锁避免 race condition。Reasoner 跑完后，Talker 在下一轮对话里找一个自然时机把分析织进回答，而不是突然蹦出一段结论。</li>
             </ol>
-            <p>用户输入在 Reasoner 还在跑时怎么处理，有三种姿态可选：QUEUE（排队等 Reasoner 跑完，适合任务场景）、INTERRUPT（立即打断重跑，适合短任务 explore）、PARALLEL（两个 Agent 真并行，Talker 即时回 Reasoner 后台跑，对话场景必须用这个）。把三种做成 config 让产品按场景选，是工业级框架该有的姿态。</p>
+            <p>用户输入在 Reasoner 还在跑时怎么处理，有三种做法可选：QUEUE（排队等 Reasoner 跑完，适合任务场景）、INTERRUPT（立即打断重跑，适合短任务 explore）、PARALLEL（两个 Agent 真并行，Talker 即时回 Reasoner 后台跑，对话场景必须用这个）。把三种做成 config 让产品按场景选。</p>
             <h2>适合的生产场景</h2>
             <ul>
             <li><strong>实时对话</strong>：教育辅导、客服、个人助手——前端要 200 毫秒级响应，后端又要深度个性化分析，单 Agent 满足不了双约束。</li>
@@ -160,7 +150,7 @@
             <li><strong>belief 命中率</strong>（健康区接近 100%）：用户回到会话时 Talker 能基于上次 belief 给个性化回应的比例。低说明 belief state 没持久化或没读到。</li>
             <li><strong>单 turn 成本</strong>（注意结构）：双模是"两档同时跑"，单 turn 成本比单档贵档还略高（多了 Talker 那部分），但换来延迟大降——这是 cost-latency-quality 三角的另一种 Pareto 选择，要按业务接受度评估。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>用户说话 →
     若是首轮：建 belief state，异步触发 Reasoner（非阻塞）
     Talker 立即回应（便宜模型，200-800ms，不给具体建议）
@@ -172,7 +162,7 @@ belief state：跨 session 持久化，写操作加锁
 返回 Talker 回应 + 后台维护的 belief
 </code></pre>
             <p>落地四个要点：Talker prompt 把"不给具体建议"约束死；Reasoner 异步任务做 timeout 和 cancel；belief state 持久化到 Redis 跨 session 复用；共享 state 写操作加锁防 race condition。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>某留学申请咨询 Agent，给中国学生辅助选校和文书润色。第一版上线两周收到一类反馈："我问它两所学校哪个更适合我，它停了 30 多秒才回，我以为网络挂了就关掉重问。" 团队复盘发现 Agent 不慢，是思考路径太完整——用户问完，Agent 老实走完整链：取用户画像（800ms）、比对两校特点（1.2s）、跑深度分析（18s）、综合写回答（4s），总共 24 秒一个高质量回答。但 24 秒对对话场景是无限长，用户体验崩盘。第三周加了"正在分析"的 loading 提示，用户还是抱怨"看着转圈就走了"。</p>
             <p>第四周彻底重写成 Talker + Reasoner：用户问完，Talker 在 200 毫秒内立刻回应，先快速点出两校核心差异、同时告诉用户"我在后台为你做详细匹配分析"、并反问用户倾向（留美工作还是回国）。用户跟 Talker 聊倾向的十几秒里，Reasoner 在后台跑完了结合 GPA、科研经历、兴趣方向的详细分析，把结论写进 belief state。Talker 在下一轮自然过桥："听到你倾向硅谷工作,那我刚跑完的分析显示……"。同样的 24 秒思考时间，体验从"卡死"变成"边聊边收到分析"。同类的在线编程辅导 Agent 用这套架构（Talker 用便宜模型对话、Reasoner 用贵模型异步分析、PARALLEL 模式、belief 跨 session 持久化、自然过桥、师生双视图 trace），上线第二月学生 NPS 从 6 升到 8.5，教师对 Agent 推荐的 override 率从 35% 降到 12%。</p>
             <h2>与其他模式的关系</h2>
@@ -182,11 +172,11 @@ belief state：跨 session 持久化，写操作加锁
             <li><strong>思维链（R1）</strong>：Reasoner 那一侧的深度推理本质就是一条完整思维链，Talker 那一侧刻意不做深推理。</li>
             <li><strong>分层记忆模式</strong>：belief state 跨 session 持久化，和记忆模块"User 层 belief 持久化"是同源思路。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>Talker-Reasoner 的本质不是性能优化，而是把 Agent 的人格拆成两个——一个处理实时、一个处理深度。Talker 给的不是 Reasoner 的预览，是性质完全不同的内容，这是两种心智模式在协作。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>

@@ -93,42 +93,32 @@
 
             <h1>P2 · Semantic Compaction · 语义压缩</h1>
             <table>
-            <thead>
-            <tr>
-            <th style="text-align: left;">字段</th>
-            <th style="text-align: left;">值</th>
-            </tr>
-            </thead>
             <tbody>
             <tr>
-            <td style="text-align: left;"><strong>双轴坐标</strong></td>
+            <td style="text-align: left;"><strong>坐标</strong></td>
             <td style="text-align: left;">感知 Perception × 链式 Chain（传）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>成本档</strong></td>
-            <td style="text-align: left;">②（摘要用便宜模型即可，按阈值触发）</td>
+            <td style="text-align: left;"><strong>成本</strong></td>
+            <td style="text-align: left;">中（摘要用便宜模型即可，按阈值触发）</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>课程对应</strong></td>
-            <td style="text-align: left;">02-03</td>
+            <td style="text-align: left;"><strong>模式组</strong></td>
+            <td style="text-align: left;">感知模式</td>
             </tr>
             <tr>
-            <td style="text-align: left;"><strong>目录归属</strong></td>
-            <td style="text-align: left;">全集 33 模式之一 · 感知模块 4 模式之一</td>
-            </tr>
-            <tr>
-            <td style="text-align: left;"><strong>一句话</strong></td>
+            <td style="text-align: left;"><strong>模式简介</strong></td>
             <td style="text-align: left;">Agent 跑久了 context 装满，得压；压的时候保留什么、丢什么、保到什么程度，决定它接下来还能不能想清楚。</td>
             </tr>
             </tbody>
             </table>
             <hr />
             <h2>它解决什么问题</h2>
-            <p>上下文分诊解决的是哪些信息能进 context，语义压缩解决的是后面那个问题：信息已经进来了，Agent 跑过几十轮 context 也满了，得压一压才能继续。压什么、保什么听起来像小细节，做不好代价很大——一段 487-token 的连接池耗尽 stack trace 被压成"a database error occurred"之后，Agent 不知道加大 pool、加 retry 已经被排除过，于是反复重试已被否决的方案，时间和 token 就这么烧着。</p>
+            <p>信息已经进来了，Agent 跑过几十轮 context 也满了，得压一压才能继续。一段 487-token 的连接池耗尽 stack trace 被压成"a database error occurred"之后，Agent 不知道加大 pool、加 retry 已经被排除过，于是反复重试已被否决的方案，时间和 token 均被浪费。</p>
             <p>语义压缩把这件事工程化：用三层级联（清理冗长 tool 结果 → 摘要老对话 → 进一步压缩）按 context 占用阈值递进触发，每层比前一层激进。它管的是单 session 内 context window 的容量，不追求无限压缩，而追求每一段历史都由高质量推理产出，不毒化下一段。</p>
             <h2>为什么坐标是「感知 × 链式」</h2>
             <ul>
-            <li><strong>纵轴 · 感知</strong>：压缩处理的是"已经看进去"的输入历史，做的是输入→语义保留压缩。它不是把信息记到跨会话的存储里（那是记忆），也不是想清楚一道题（那是推理），而是决定当下窗口里保留哪些证据。</li>
+            <li><strong>纵轴 · 感知</strong>：压缩处理的是"已经看进去"的输入历史，做的是输入→语义保留压缩。它不是把信息记到跨会话的存储里（记忆），也不是想清楚一道题（推理），而是决定当下窗口里保留哪些证据。</li>
             <li><strong>横轴 · 链式</strong>：三层压缩是级联结构，每层接前一层的输出，原文经清理、摘要、再压缩一路传下来，一层比一层紧。流在 chain 上的是被压缩的历史。</li>
             </ul>
             <h2>核心机制</h2>
@@ -171,7 +161,7 @@
             <li><strong>摘要丢关键信息</strong>：把 "line 47, max_connections=20, queue_depth=347" 压成"a database error occurred"，三个定位数字全没了，Agent 几个循环后又得重读日志。摘要 prompt 要写死"必须保留所有数字、文件路径、函数名"。</li>
             <li><strong>错误边界压缩</strong>：在 Agent 活跃推理中段触发压缩，比如刚把 bug 缩到两个候选文件正要决策，压缩一来推理上下文丢失，从头来过。只压已完成、Agent 已 move on 的对话段。</li>
             <li><strong>反复压缩导致漂移</strong>：压缩压缩过的内容会把信息放大到失真。同一段历史不允许被压超过两次，再不够就转人或开新 session，不要硬上 Level 3。</li>
-            <li><strong>95% 太晚</strong>：默认阈值意味着压缩发生在"已经低质量推理过一段"之后。调到 60%-70%。</li>
+            <li><strong>过晚才压缩</strong>：Claude Code 默认 95% 触发，意味着压缩发生在"已经低质量推理过一段"之后。调到 60%-70%。</li>
             <li><strong>永远不该压错误堆栈</strong>：错误堆栈是 Agent 的反馈回路，丢了等于失忆。它必须跨整个压缩流程受特殊保护。</li>
             </ul>
             <h2>关键指标</h2>
@@ -180,7 +170,7 @@
             <li><strong>平均压缩比</strong>（健康区 0.30-0.50）：after/before。低于 0.20 是过度压缩，关键信息丢失概率高；高于 0.60 是没压够，很快又得压。</li>
             <li><strong>每次压缩保留的错误堆栈数</strong>（任何零保留都触发 P0 报警）：最关键的一个指标。零保留意味着错误识别 patterns 漏了，下次 Agent 撞同一个 bug 时没记忆。</li>
             </ul>
-            <h2>最小骨架</h2>
+            <h2>最小实现骨架</h2>
             <pre><code>should_compact(total, budget): total / budget &gt;= 0.60   # 60% 早压
 compact(turns, target):
     切分：老的可压 | 受保护（最近 N 轮 + 所有错误堆栈，永不压）
@@ -190,7 +180,7 @@ compact(turns, target):
 每次压缩落一条 CompactionEvent（level / 前后 token / 保留的错误堆栈数）
 </code></pre>
             <p>anchor 的"已排除方案"字段要在摘要 prompt 里写死"已排除的方案必须保留，新决策追加而非覆盖"。摘要调用用便宜模型即可。</p>
-            <h2>企业落地一例</h2>
+            <h2>企业落地示例</h2>
             <p>一个企业客户报了 P1 级 API 网关故障，客服 Agent 接单，会话从下午两点开始跑 4 小时、80-120 轮，context 占用爬到 150K-200K。节律按三个时点设计：约 100K（55%）第一次压缩走 Level 1 只清理冗长 tool 输出，anchor 第一次写入已做诊断和已排除方案；约 120K（67%）第二次压缩走 Level 2，老对话 verbatim 没了，anchor 成为后续唯一历史记忆；进入 SLA 倒计时区主动触发 Level 3 并 export handoff，把 anchor 加已排除方案全部导出给二线工程师。关键纪律是 Level 3 之后不再让 Agent 推理重要决策——L3 是 Agent 该退场的信号，不是再压一次的意思。这份交接单让人工客服 5 分钟就能读完接手。</p>
             <h2>与其他模式的关系</h2>
             <ul>
@@ -198,11 +188,11 @@ compact(turns, target):
             <li><strong>渐进发现（P3）</strong>：三者按 token 的不同时间维度分工。分诊管未来、压缩管过去、发现管未知，生产 Agent 三个都要做，少做一个就在那个维度上漏。</li>
             <li><strong>分层记忆（Memory 模块）</strong>：边界要守住。压缩管单 session 内窗口容量，session 一结束所有压缩事件清零；要记住"上周这个用户报过类似 bug"就是记忆的事，别让 compactor 去做记忆的活。</li>
             </ul>
-            <h2>一句话记住它</h2>
+            <h2>该模式的启发</h2>
             <p>好的压缩本身就是一种认知——Agent 选择保留什么，决定它接下来能想清什么；压掉一段错误堆栈，就像 refactoring 时把测试也删了，下次回归你不会知道哪里坏了。</p>
 
                         <h2>蓝皮书 · 企业落地实践</h2>
-            <p>这个模式在真实企业系统里怎么落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
+            <p>我们希望收集这个模式在真实企业系统里如何落地。一个模式可以挂多篇实践，下面是已落档的案例切片。</p>
             <p style="font-size: 0.9rem; color: var(--color-text-muted); border-left: 3px solid var(--color-rule); padding-left: 0.9rem;">虚位以待 · 你手上有把这个模式做深的真实系统？欢迎 <a href="/zh/join/">补一篇企业落地实践 →</a></p>
 
             <hr>
