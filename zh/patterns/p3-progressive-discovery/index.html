@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="/images/favicon.png">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="page-essay">
+<body class="page-essay page-docs">
 
     <header class="site-header">
         <div class="container">
@@ -36,6 +36,54 @@
     </header>
 
     <main class="container content">
+      <div class="docs-layout">
+        <aside class="docs-sidebar">
+            <a href="/zh/patterns/" class="docs-nav-title">模式矩阵白皮书</a>
+            <h4>感知 Perception</h4>
+            <a href="/zh/patterns/p1-context-triage/">P1 上下文分诊</a>
+            <a href="/zh/patterns/p2-semantic-compaction/">P2 语义压缩</a>
+            <a href="/zh/patterns/p3-progressive-discovery/" class="active">P3 渐进发现</a>
+            <a href="/zh/patterns/p4-multi-modal-fusion/">P4 多模态融合</a>
+            <h4>记忆 Memory</h4>
+            <a href="/zh/patterns/m1-hierarchical-retention/">M1 分层保留</a>
+            <a href="/zh/patterns/m2-rag-pipeline/">M2 检索增强生成</a>
+            <a href="/zh/patterns/m3-progress-tracking/">M3 进度追踪</a>
+            <a href="/zh/patterns/m4-failure-journals/">M4 失败日记</a>
+            <a href="/zh/patterns/m5-procedural-memory/">M5 程序性记忆 <span class="ext">扩展</span></a>
+            <h4>推理 Reasoning</h4>
+            <a href="/zh/patterns/r1-chain-of-thought/">R1 思维链</a>
+            <a href="/zh/patterns/r2-complexity-based-routing/">R2 复杂度路由</a>
+            <a href="/zh/patterns/r3-parallel-exploration/">R3 并行探索</a>
+            <a href="/zh/patterns/r4-iterative-hypothesis-testing/">R4 迭代假设验证</a>
+            <a href="/zh/patterns/r5-talker-reasoner/">R5 双模架构 <span class="ext">扩展</span></a>
+            <h4>行动 Action</h4>
+            <a href="/zh/patterns/a1-tool-dispatch/">A1 工具调度</a>
+            <a href="/zh/patterns/a2-plan-and-execute/">A2 规划执行</a>
+            <a href="/zh/patterns/a3-prompt-chaining/">A3 提示链</a>
+            <a href="/zh/patterns/a4-minimal-tool-set/">A4 最简工具集 <span class="ext">扩展</span></a>
+            <a href="/zh/patterns/a5-guardrail-sandwich/">A5 守卫三明治</a>
+            <h4>反思 Reflection</h4>
+            <a href="/zh/patterns/f1-generator-critic/">F1 生成批评</a>
+            <a href="/zh/patterns/f2-skill-package/">F2 技能包</a>
+            <a href="/zh/patterns/f3-experience-replay/">F3 经验回放</a>
+            <a href="/zh/patterns/f4-self-heal-loop/">F4 自愈循环</a>
+            <h4>协作 Collaboration</h4>
+            <a href="/zh/patterns/c1-hierarchical-delegation/">C1 层级委派</a>
+            <a href="/zh/patterns/c2-fan-out-gather/">C2 扇出聚合</a>
+            <a href="/zh/patterns/c3-adversarial-review/">C3 对抗评审</a>
+            <a href="/zh/patterns/c4-handoff-chain/">C4 交接链</a>
+            <a href="/zh/patterns/c5-sub-agent-isolation/">C5 子代理隔离 <span class="ext">扩展</span></a>
+            <a href="/zh/patterns/c6-choreography/">C6 编舞 <span class="ext">扩展</span></a>
+            <h4>治理 Governance</h4>
+            <a href="/zh/patterns/g1-approval-gate/">G1 审批门</a>
+            <a href="/zh/patterns/g2-blast-radius-control/">G2 爆炸半径控制</a>
+            <a href="/zh/patterns/g3-progressive-commitment/">G3 渐进承诺</a>
+            <a href="/zh/patterns/g4-hooks-pipeline/">G4 钩子流水线 <span class="ext">扩展</span></a>
+            <a href="/zh/patterns/g5-observability-harness/">G5 可观测性</a>
+            <h4>案例</h4>
+            <a href="/zh/cases/">案例库 · 蓝皮书</a>
+        </aside>
+        <div class="docs-main">
 
         <article class="essay">
             <p style="font-size: 0.9rem; color: var(--color-text-faint); margin-bottom: 1.75rem;">
@@ -161,15 +209,17 @@
 
             <hr>
             <p style="font-size: 0.92rem; color: var(--color-text-muted);">
-                本页属于 ADPS 33 模式白皮书。返回 <a href="/zh/patterns/">模式矩阵与白皮书目录</a>，
+                本页属于 ADPS 模式白皮书。返回 <a href="/zh/patterns/">模式矩阵与白皮书目录</a>，
                 或查看配套 <a href="https://github.com/huangjia2019/agent-design-patterns" target="_blank" rel="noopener">可运行代码目录</a>。
             </p>
         </article>
 
-        <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-rule); color: var(--color-text-faint); font-size: 0.88rem; max-width: 52rem;">
-            <p>ADPS · Agent Design Patterns Society · 2026 年发起</p>
-        </footer>
+            <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-rule); color: var(--color-text-faint); font-size: 0.88rem;">
+                <p>ADPS · Agent Design Patterns Society · 2026 年发起</p>
+            </footer>
 
+        </div>
+      </div>
     </main>
 
     <script data-goatcounter="https://adps.goatcounter.com/count"
