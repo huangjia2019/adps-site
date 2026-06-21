@@ -19,13 +19,13 @@
     <style>
         .wp-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0 1.75rem; font-size: 0.92rem; }
         .wp-table th, .wp-table td { border: 1px solid var(--color-rule); padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
-        .wp-table th { background: var(--color-link); color: #fff; font-weight: 600; }
+        .wp-table th { background: var(--color-link) !important; color: #fff !important; font-weight: 600; }
         .wp-table tr:nth-child(even) td { background: var(--color-quote-bg); }
         .wp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .matrix-table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.8rem; min-width: 46rem; }
         .matrix-table th, .matrix-table td { border: 1px solid var(--color-rule); padding: 0.4rem 0.5rem; text-align: center; }
-        .matrix-table th { background: #1a1a1a !important; color: #fff !important; font-weight: 600; }
-        .matrix-table td.fn { background: #1a1a1a !important; color: #fff !important; font-weight: 600; text-align: left; white-space: nowrap; }
+        .matrix-table th { background: var(--color-link) !important; color: #fff !important; font-weight: 600; }
+        .matrix-table td.fn { background: var(--color-link) !important; color: #fff !important; font-weight: 600; text-align: left; white-space: nowrap; }
         .matrix-table td.filled { background: var(--color-badge-bg); color: var(--color-text); }
         .matrix-table td.empty { color: var(--color-text-faint); }
         .ext-badge { font-size: 0.72em; color: var(--color-badge); border: 1px solid currentColor; border-radius: 3px; padding: 0 4px; vertical-align: middle; }
@@ -134,7 +134,7 @@
                 <strong>认知功能</strong>（行）回答 Agent 在做什么类型的工作，七类：感知、记忆、推理、行动、反思、协作、治理。
             </p>
             <p>
-                <strong>执行拓扑</strong>（列）回答工作长什么形状，六类。可以记成六个动词。
+                <strong>执行拓扑</strong>（列）回答工作长什么形状，六类。可以记成六个动词：传、选、撒、协、转、分。
             </p>
             <div class="wp-scroll">
             <table class="wp-table">
