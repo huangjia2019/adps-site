@@ -2180,8 +2180,9 @@ article.essay footer a { color: var(--color-link); }
 }
 .docs-sidebar a:hover { color: var(--color-link); }
 .docs-sidebar a.active { color: var(--color-link); font-weight: 600; }
+.docs-sidebar .sb-home { color: var(--color-link); font-weight: 700; }
 .docs-sidebar .ext { font-size: 0.7em; color: var(--color-badge); }
-/* 折叠式分区：模式矩阵 / 案例 / 概念，点击标题手风琴展开，一次只开一个 */
+/* 折叠式分区：模式矩阵 / 案例 / 概念，默认全展开，点击标题独立折叠 */
 .docs-sidebar .sb-section { border-top: 1px solid var(--color-rule); }
 .docs-sidebar .sb-section:first-child { border-top: none; }
 .docs-sidebar .sb-head {
