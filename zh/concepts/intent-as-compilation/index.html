@@ -18,7 +18,8 @@
             <a href="/zh/" class="site-brand">ADPS</a>
             <nav class="site-nav">
                 <a href="/zh/patterns/">模式矩阵</a>
-                <a href="/zh/cases/" style="color: var(--color-link);">案例库</a>
+                <a href="/zh/cases/">案例库</a>
+                <a href="/zh/concepts/" style="color: var(--color-link);">概念</a>
                 <a href="/zh/research/">论文</a>
                 <a href="/zh/positions/">立场</a>
                 <a href="/zh/founders/">团队</a>
@@ -33,7 +34,7 @@
     <main class="container content">
       <div class="docs-layout">
         <aside class="docs-sidebar">
-          <div class="sb-section">
+          <div class="sb-section open">
             <button class="sb-head" type="button">模式矩阵<span class="sb-caret">▸</span></button>
             <div class="sb-body">
               <h4>感知 Perception</h4>
@@ -78,7 +79,7 @@
               <a href="/zh/patterns/g4-hooks-pipeline/">G4 钩子流水线 <span class="ext">扩展</span></a>
               <a href="/zh/patterns/g5-observability-harness/">G5 可观测性</a>
             </div></div>
-          <div class="sb-section">
+          <div class="sb-section open">
             <button class="sb-head" type="button">案例 · 蓝皮书<span class="sb-caret">▸</span></button>
             <div class="sb-body">
               <a href="/zh/cases/">案例库首页</a>
@@ -142,10 +143,7 @@
       var heads=document.querySelectorAll('.docs-sidebar .sb-head');
       for(var i=0;i<heads.length;i++){
         heads[i].addEventListener('click',function(){
-          var sec=this.parentElement, open=sec.classList.contains('open');
-          var all=document.querySelectorAll('.docs-sidebar .sb-section');
-          for(var j=0;j<all.length;j++){all[j].classList.remove('open');}
-          if(!open){sec.classList.add('open');}
+          this.parentElement.classList.toggle('open');
         });
       }
     })();
